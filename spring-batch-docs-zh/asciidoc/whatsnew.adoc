@@ -4,9 +4,9 @@
 
 [[whatsNew]]
 
-== Spring Batch 4.1 新特性
+== Spring Batch 4.2 新特性
 
-Spring Batch 4.2 adds the following features:
+Spring Batch 4.2 添加了下面的新特性：
 
 * Support for batch metrics with https://micrometer.io[Micrometer]
 * Support for reading/writing data from/to https://kafka.apache.org[Apache Kafka] topics
