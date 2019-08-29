@@ -2,36 +2,25 @@ include::header/index-header.adoc[]
 
 // ======================================================================================
 
-Welcome to the Spring Batch reference documentation! This documentation is also available
-as single link:index-single.html[html] and link:../pdf/spring-batch-reference.pdf[pdf] documents.
+欢迎来到 Spring 批量（Spring Batch）文档！本文档的内容同时还提供单一 link:index-single.html[html] 和 link:../pdf/spring-batch-reference.pdf[pdf] 文档。
 
-The reference documentation is divided into several sections:
+本参考文档被分列为下面的部分：
 
 [horizontal]
-<<spring-batch-intro.adoc#spring-batch-intro,Spring Batch Introduction>> :: Background, usage
- scenarios and general guidelines.
-<<whatsnew.adoc#whatsNew,What's new in Spring Batch 4.2>> :: New features introduced in version 4.2.
-<<domain.adoc#domainLanguageOfBatch,The Domain Language of Batch>> :: Core concepts and abstractions
-of the Batch domain language.
-<<job.adoc#configureJob,Configuring and Running a Job>> :: Job configuration, execution and
-administration.
-<<step.adoc#configureStep,Configuring a Step>> :: Step configuration, different types of steps,
-controlling step flow.
-<<readersAndWriters.adoc#readersAndWriters,ItemReaders and ItemWriters>> :: Item readers
-and writers interfaces and how to use them.
-<<scalability.adoc#scalability,Scaling and Parallel Processing>> :: Multi-threaded steps,
-parallel steps, remote chunking and partitioning.
-<<repeat.adoc#repeat,Repeat>> :: Completion policies and exception handling of repetitive actions.
-<<retry.adoc#retry,Retry>> :: Retry and backoff policies of retryable operations.
-<<testing.adoc#testing,Unit Testing>> :: Job and Step testing facilities and APIs.
-<<common-patterns.adoc#commonPatterns, Common Patterns>> :: Common batch processing patterns
-and guidelines.
-<<jsr-352.adoc#jsr-352,JSR-352 Support>> :: JSR-352 support, similarities and differences
-with Spring Batch.
-<<spring-batch-integration.adoc#springBatchIntegration,Spring Batch Integration>> :: Integration
-between Spring Batch and Spring Integration projects.
-<<monitoring-and-metrics.adoc#monitoring-and-metrics,Monitoring and metrics>> :: Batch jobs
-monitoring and metrics
+<<spring-batch-intro.adoc#spring-batch-intro,Spring Batch Introduction>> :: 背景，使用场景和一些常用使用指引。
+<<whatsnew.adoc#whatsNew,What's new in Spring Batch 4.2>> :: 4.2 版本中的新特性。
+<<domain.adoc#domainLanguageOfBatch,The Domain Language of Batch>> :: 核心概念和有关批处理域语言（Batch Domain Language）的抽象。
+<<job.adoc#configureJob,Configuring and Running a Job>> :: 作业（Job）配置，执行和管理。
+<<step.adoc#configureStep,Configuring a Step>> :: 步骤（Step）配置，不同类型的步骤，控制步骤流。
+<<readersAndWriters.adoc#readersAndWriters,ItemReaders and ItemWriters>> :: 条目（Item）读和写接口以及如何使用它们。
+<<scalability.adoc#scalability,Scaling and Parallel Processing>> :: 多线程步骤（Steps）,并行步骤，远程分块（Chunking）和分区（Partitioning）。
+<<repeat.adoc#repeat,Repeat>> :: 重复行为（Repetitive Actions）的完成策略和异常处理。
+<<retry.adoc#retry,Retry>> :: 可重试操作的重做和退出策略。
+<<testing.adoc#testing,Unit Testing>> :: 作业和步骤的测试策略和 APIs。
+<<common-patterns.adoc#commonPatterns, Common Patterns>> :: 通用批量处理模式和使用指引。
+<<jsr-352.adoc#jsr-352,JSR-352 Support>> :: JSR-352 支持，与 Spring Batch 相似和不同之处。
+<<spring-batch-integration.adoc#springBatchIntegration,Spring Batch Integration>> :: Spring Batch 与 Spring 其他项目的整合。
+<<monitoring-and-metrics.adoc#monitoring-and-metrics,Monitoring and metrics>> :: 批量作业的监控和指标
 
 The following appendices are available:
 
