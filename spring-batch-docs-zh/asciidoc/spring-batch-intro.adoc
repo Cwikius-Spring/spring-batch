@@ -6,8 +6,7 @@
 
 == Spring Batch 介绍
 
-Many applications within the enterprise domain require bulk processing to perform
-business operations in mission critical environments. These business operations include:
+在企业域环境中针对关键环境进行商业操作的时候，有许多应用程序需要进行批量处理。这些业务运营包括：
 
 * Automated, complex processing of large volumes of information that is most efficiently
 processed without user interaction. These operations typically include time-based events
