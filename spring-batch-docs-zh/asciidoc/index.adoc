@@ -13,7 +13,7 @@ include::header/index-header.adoc[]
 <<job.adoc#configureJob,Configuring and Running a Job>> :: 作业（Job）配置，执行和管理。
 <<step.adoc#configureStep,Configuring a Step>> :: 步骤（Step）配置，不同类型的步骤，控制步骤流。
 <<readersAndWriters.adoc#readersAndWriters,ItemReaders and ItemWriters>> :: 条目（Item）读和写接口以及如何使用它们。
-<<scalability.adoc#scalability,Scaling and Parallel Processing>> :: 多线程步骤（Steps）,并行步骤，远程分块（Chunking）和分区（Partitioning）。
+<<scalability.adoc#scalability,Scaling and Parallel Processing>> :: 多线程步骤（Steps），并行步骤，远程分块（Chunking）和分区（Partitioning）。
 <<repeat.adoc#repeat,Repeat>> :: 重复行为（Repetitive Actions）的完成策略和异常处理。
 <<retry.adoc#retry,Retry>> :: 可重试操作的重做和退出策略。
 <<testing.adoc#testing,Unit Testing>> :: 作业和步骤的测试策略和 APIs。
@@ -22,7 +22,7 @@ include::header/index-header.adoc[]
 <<spring-batch-integration.adoc#springBatchIntegration,Spring Batch Integration>> :: Spring Batch 与 Spring 其他项目的整合。
 <<monitoring-and-metrics.adoc#monitoring-and-metrics,Monitoring and metrics>> :: 批量作业的监控和指标
 
-The following appendices are available:
+有下列有关的可用附录：
 
 [horizontal]
 <<appendix.adoc#listOfReadersAndWriters,List of ItemReaders and ItemWriters>> :: List of
