@@ -1,4 +1,6 @@
 '''
+文档的中文版本由 CWIKI.US 进行翻译和整理。请访问 https://www.cwiki.us/display/SpringBatchZH/Reference+Documentation[Spring Batch 文档和手册（中文）]
+
 Lucas Ward, Dave Syer, Thomas Risberg, Robert Kasanicky, Dan Garrette, Wayne Lund,
 Michael Minella, Chris Schaefer, Gunnar Hillert, Glenn Renfro, Jay Bryant, Mahmoud Ben Hassine
 
