@@ -4,7 +4,7 @@
 
 [[spring-batch-intro]]
 
-== Spring Batch Introduction
+== Spring Batch 介绍
 
 Many applications within the enterprise domain require bulk processing to perform
 business operations in mission critical environments. These business operations include:
@@ -41,7 +41,7 @@ highly scalable manner to process significant volumes of information.
 
 [[springBatchBackground]]
 
-=== Background
+=== 背景
 
 While open source software projects and associated communities have focused greater
 attention on web-based and microservices-based architecture frameworks, there has been a
@@ -75,7 +75,7 @@ enterprise IT environments can benefit from Spring Batch.
 
 [[springBatchUsageScenarios]]
 
-=== Usage Scenarios
+=== 使用场景
 
 A typical batch program generally:
 
@@ -117,7 +117,7 @@ the infrastructure layer.
 the application, built using Maven.
 
 [[springBatchArchitecture]]
-=== Spring Batch Architecture
+=== Spring Batch 体系结构
 // TODO Make a separate document
 Spring Batch is designed with extensibility and a diverse group of end users in mind. The
 figure below shows the layered architecture that supports the extensibility and ease of
@@ -137,7 +137,7 @@ writers, such as `ItemReader` and `ItemWriter`) and the core framework itself (r
 which is its own library).
 
 [[batchArchitectureConsiderations]]
-=== General Batch Principles and Guidelines
+=== 一般批量处理的原则和使用指引
 
 The following key principles, guidelines, and general considerations should be considered
 when building a batch solution.
@@ -189,7 +189,7 @@ If the system depends on flat files, file backup procedures should not only be i
 and documented but be regularly tested as well.
 
 [[batchProcessingStrategy]]
-=== Batch Processing Strategies
+=== 批量处理策略
 
 To help design and implement batch systems, basic batch application building blocks and
 patterns should be provided to the designers and programmers in the form of sample
