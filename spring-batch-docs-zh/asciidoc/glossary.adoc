@@ -1,8 +1,8 @@
 [[glossary]]
 [appendix]
-== Glossary
+== 术语表
 [glossary]
-=== Spring Batch Glossary
+=== Spring Batch 术语表
 
 Batch::
   An accumulation of business transactions over time.
