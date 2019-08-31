@@ -8,35 +8,25 @@
 
 在企业域环境中针对关键环境进行商业操作的时候，有许多应用程序需要进行批量处理。这些业务运营包括：
 
-* Automated, complex processing of large volumes of information that is most efficiently
-processed without user interaction. These operations typically include time-based events
-(such as month-end calculations, notices, or correspondence).
-* Periodic application of complex business rules processed repetitively across very large
-data sets (for example, insurance benefit determination or rate adjustments).
-* Integration of information that is received from internal and external systems that
-typically requires formatting, validation, and processing in a transactional manner into
-the system of record. Batch processing is used to process billions of transactions every
-day for enterprises.
+* 无需用户交互即可最有效地处理大量信息的自动化复杂处理。这些操作通常包括基于时间的事件 （例如，月末统计计算，通知或者消息通知）。
+* 在非常大的数据集中重复处理复杂业务规则的定期应用（例如，保险利益确定或费率调整）。
+* 整合从内部或者外部系统中收到的信息，这些信息通常要求格式，校验和事务范式处理到记录系统中。
+批处理通常被用来针对企业每天产生超过亿万级别的数据量。
 
-Spring Batch is a lightweight, comprehensive batch framework designed to enable the
-development of robust batch applications vital for the daily operations of enterprise
-systems. Spring Batch builds upon the characteristics of the Spring Framework that people
-have come to expect (productivity, POJO-based development approach, and general ease of
-use), while making it easy for developers to access and leverage more advance enterprise
-services when necessary. Spring Batch is not a scheduling framework. There are many good
-enterprise schedulers (such as Quartz, Tivoli, Control-M, etc.) available in both the
-commercial and open source spaces.  It is intended to work in conjunction with a
-scheduler, not replace a scheduler.
+Spring Batch是一个轻量级的综合性批处理框架，可用于开发企业信息系统中那些至关重要的数据批量处理业务。
+Spring Batch构建了人们期望的Spring Framework 特性（生产环境，基于 POJO 的开发和易于使用），
+同时让开发者很容易的访问和使用企业级服务。Spring Batch 不是一个自动调度运行框架。在市面上已经有了很多企
+业级和开源的自动运行框架（例如 Quartz，Tivoli， Control-M 等）。
+Spring Batch 被设计与计划任务和调度程序一同协作完成任务，而不是替换调度程序。
 
-Spring Batch provides reusable functions that are essential in processing large volumes
-of records, including logging/tracing, transaction management, job processing statistics,
-job restart, skip, and resource management. It also provides more advanced technical
-services and features that enable extremely high-volume and high performance batch jobs
-though optimization and partitioning techniques. Spring Batch can be used in both simple
-use cases (such as reading a file into a database or running a stored procedure) as well
-as complex, high volume use cases (such as moving high volumes of data between databases,
-transforming it, and so on). High-volume batch jobs can leverage the framework in a
-highly scalable manner to process significant volumes of information.
+Spring Batch 提供了可重用的功能，这些功能被用来对大量数据和记录进行处理，包括有日志/跟踪（logging/tracing），
+事务管理（transaction management），作业处理状态（job processing statistics），作业重启（job restart），
+作业跳过（job skip）和资源管理（resource management）。
+此外还提供了许多高级服务和特性, 使之能够通过优化（optimization ） 和分片技术（partitioning techniques）
+来实现极高容量和性能的批处理作业。
+Spring Batch 能够简单（例如，将文件读入到数据库中或者运行一个存储过程）和复杂（例如，在数据库之间对海量数据进行移动或转换等）
+情况下都能很好的工作。
+可以在框架高度扩展的方式下执行大批量的作业来处理海量的信息。
 
 [[springBatchBackground]]
 
