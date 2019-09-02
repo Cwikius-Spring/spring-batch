@@ -32,35 +32,23 @@ Spring Batch 能够简单（例如，将文件读入到数据库中或者运行�
 
 === 背景
 
-While open source software projects and associated communities have focused greater
-attention on web-based and microservices-based architecture frameworks, there has been a
-notable lack of focus on reusable architecture frameworks to accommodate Java-based batch
-processing needs, despite continued needs to handle such processing within enterprise IT
-environments. The lack of a standard, reusable batch architecture has resulted in the
-proliferation of many one-off, in-house solutions developed within client enterprise IT
-functions.
+在开源项目及其相关社区把大部分注意力集中在基于 web 和 微服务体系框架时框架中时，基于 Java 的批处理框架却无人问津，
+尽管在企业 T 环境中一直都有这种批处理的需求。但因为缺乏一个标准的、可重用的批处理框架导致在企业客户的 IT 系统中
+存在着很多一次编写，一次使用的版本，以及很多不同的内部解决方案。
 
-SpringSource (now Pivotal) and Accenture collaborated to change this. Accenture's
-hands-on industry and technical experience in implementing batch architectures,
-SpringSource's depth of technical experience, and Spring's proven programming model
-together made a natural and powerful partnership to create high-quality, market-relevant
-software aimed at filling an important gap in enterprise Java. Both companies worked with
-a number of clients who were solving similar problems by developing Spring-based batch
-architecture solutions. This provided some useful additional detail and real-life
-constraints that helped to ensure the solution can be applied to the real-world problems
-posed by clients.
+SpringSource (现被命名为 Pivotal) 和 Accenture（埃森哲）致力于通过合作来改善这种状况。
+埃森哲在实现批处理架构上有着丰富的产业实践经验，SpringSource 有深入的技术开发积累，
+背靠 Spring 框架提供的编程模型,意味着两者能够结合成为默契且强大的合作伙伴，创造出高质量的、市场认可的企业级 Java 解决方案，
+填补这一重要的行业空白。两家公司都与许多通过开发基于Spring的批处理架构解决方案解决类似问题的客户合作。
+这提供了一些有用的额外细节和实际约束，有助于确保解决方案可以应用于客户提出的现实问题。
 
-Accenture contributed previously proprietary batch processing architecture frameworks to
-the Spring Batch project, along with committer resources to drive support, enhancements,
-and the existing feature set. Accenture's contribution was based upon decades of
-experience in building batch architectures with the last several generations of
-platforms: COBOL/Mainframe, C++/Unix, and now Java/anywhere.
 
-The collaborative effort between Accenture and SpringSource aimed to promote the
-standardization of software processing approaches, frameworks, and tools that can be
-consistently leveraged by enterprise users when creating batch applications. Companies
-and government agencies desiring to deliver standard, proven solutions to their
-enterprise IT environments can benefit from Spring Batch.
+埃森哲为Spring Batch项目贡献了以前专有的批处理体系结构框架，以及提供支持，增强功能和现有功能集的提交者资源。
+埃森哲的贡献基于几十年来在使用最新几代平台构建批量架构方面的经验：COBOL / Mainframe，C / Unix以及现在的Java / Anywhere。
+
+埃森哲与SpringSource之间的合作旨在促进软件处理方法，框架和工具的标准化，
+在创建批处理应用程序时，企业用户可以始终如一地利用这些方法，框架和工具。希望为其企业IT环境提供标准的，
+经过验证的解决方案的公司和政府机构可以从 Spring Batch 中受益。
 
 [[springBatchUsageScenarios]]
 
