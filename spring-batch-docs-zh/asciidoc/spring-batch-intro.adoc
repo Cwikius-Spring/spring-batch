@@ -33,7 +33,7 @@ Spring Batch 能够简单（例如，将文件读入到数据库中或者运行�
 === 背景
 
 在开源项目及其相关社区把大部分注意力集中在基于 web 和 微服务体系框架时框架中时，基于 Java 的批处理框架却无人问津，
-尽管在企业 T 环境中一直都有这种批处理的需求。但因为缺乏一个标准的、可重用的批处理框架导致在企业客户的 IT 系统中
+尽管在企业 IT 环境中一直都有这种批处理的需求。但因为缺乏一个标准的、可重用的批处理框架导致在企业客户的 IT 系统中
 存在着很多一次编写，一次使用的版本，以及很多不同的内部解决方案。
 
 SpringSource (现被命名为 Pivotal) 和 Accenture（埃森哲）致力于通过合作来改善这种状况。
@@ -54,44 +54,35 @@ SpringSource (现被命名为 Pivotal) 和 Accenture（埃森哲）致力于通�
 
 === 使用场景
 
-A typical batch program generally:
+一般的典型批处理程序：
 
-* Reads a large number of records from a database, file, or queue.
-* Processes the data in some fashion.
-* Writes back data in a modified form.
+* 从数据库，文件或队列中读取大量记录。
+* 以某种方式处理数据。
+* 以修改的形式写回数据。
 
-Spring Batch automates this basic batch iteration, providing the capability to process
-similar transactions as a set, typically in an offline environment without any user
-interaction. Batch jobs are part of most IT projects, and Spring Batch is the only open
-source framework that provides a robust, enterprise-scale solution.
+Spring Batch自动执行此基本批处理迭代，提供处理类似事务的功能，通常在脱机环境中处理，无需任何用户交互。
+批处理作业是大多数 IT 项目的一部分，Spring Batch 是唯一提供强大的企业级解决方案的开源框架。
 
-Business Scenarios
+业务场景
 
-* Commit batch process periodically
-* Concurrent batch processing: parallel processing of a job
-* Staged, enterprise message-driven processing
-* Massively parallel batch processing
-* Manual or scheduled restart after failure
-* Sequential processing of dependent steps (with extensions toworkflow-driven batches)
-* Partial processing: skip records (for example, on rollback)
-* Whole-batch transaction, for cases with a small batch size or existing stored
-procedures/scripts
+* 周期提交批处理任务
+* 同时批处理进程：并非处理一个任务
+* 分阶段的企业消息驱动处理
+* 高并发批处理
+* 失败后的手动或定时重启
+* 按顺序处理任务依赖（使用工作流驱动的批处理插件）
+* 部分处理：跳过记录（例如，回滚）
+* 全批次事务：因为可能有小数据量的批处理或存在存储过程/脚本中
 
-Technical Objectives
+技术目标
 
-* Batch developers use the Spring programming model: Concentrate on business logic and
-let the framework take care of infrastructure.
-* Clear separation of concerns between the infrastructure, the batch execution
-environment, and the batch application.
-* Provide common, core execution services as interfaces that all projects can implement.
-* Provide simple and default implementations of the core execution interfaces that can be
-used 'out of the box'.
-* Easy to configure, customize, and extend services, by leveraging the spring framework
-in all layers.
-* All existing core services should be easy to replace or extend, without any impact to
-the infrastructure layer.
-* Provide a simple deployment model, with the architecture JARs completely separate from
-the application, built using Maven.
+* 批量的开发者使用 Spring 的编程模型：开发者能够更加专注于业务逻辑，让框架来解决基础的功能
+* 在基础架构、批处理执行环境、批处理应用之间有明确的划分
+* 以接口形式提供通用的核心服务，以便所有项目都能使用
+* 提供简单的默认实现，以实现核心执行接口的“开箱即用”
+* 通过在所有层中对 Spring 框架进行平衡配置，能够实现更加容易的配置，自定义和扩展服务。
+* 所有存在的核心服务应该能够很容易的在不同系统架构层进行影响的情况进行替换或扩展。
+* 提供一个简单的部署模块，使用 Maven 来进行编译的 JARs 架构，并与应用完全分离。
 
 [[springBatchArchitecture]]
 === Spring Batch 体系结构
