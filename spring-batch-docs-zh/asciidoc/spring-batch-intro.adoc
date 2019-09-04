@@ -202,89 +202,49 @@ image::{batch-asciidoc}images/spring-batch-layers.png[Figure 1.1: 批量层级�
 这个锁服务将会跟踪数据库的锁（例如在一个专用的数据库表（db-table）中存储必要的信息），然后在应用程序请求数据库操作时授予权限或拒绝。
 重试逻辑应该也需要在系统架构中实现，以避免批量作业中的因资源锁定而导致批量任务被终止。
 
-*1. Normal processing in a batch window* For simple batch processes running in a separate
-batch window where the data being updated is not required by on-line users or other batch
-processes, concurrency is not an issue and a single commit can be done at the end of the
-batch run.
+*1. 批量处理作业窗口中的常规处理* 针对运行在一个单独批处理窗口中的简单批量处理，更新的数据对在线用户或其他批处理来说并没有实时性要求，
+也没有并发问题，在批处理运行完成后执行单次提交即可。
 
-In most cases, a more robust approach is more appropriate. Keep in mind that batch
-systems have a tendency to grow as time goes by, both in terms of complexity and the data
-volumes they handle. If no locking strategy is in place and the system still relies on a
-single commit point, modifying the batch programs can be painful. Therefore, even with
-the simplest batch systems, consider the need for commit logic for restart-recovery
-options as well as the information concerning the more complex cases described later in
-this section.
+大多数情况下，一种更健壮的方法会更合适。要记住的是，批处理系统会随着时间的流逝而增长，包括复杂度和需要处理的数据量。
+如果没有合适的锁定策略，系统仍然依赖于一个单一的提交点，则修改批处理程序会是一件痛苦的事情。 因此，即使是最简单的批处理系统，
+也应该为重启-恢复（restart-recovery）选项考虑提交逻辑。针对下面的情况，批量处理就更加复杂了。
 
-*2. Concurrent batch or on-line processing* Batch applications processing data that can
-be simultaneously updated by on-line users should not lock any data (either in the
-database or in files) which could be required by on-line users for more than a few
-seconds. Also, updates should be committed to the database at the end of every few
-transactions. This minimizes the portion of data that is unavailable to other processes
-and the elapsed time the data is unavailable.
+*2. 并发批量 / 在线处理* 批处理程序处理的数据如果会同时被在线用户实时更新，就不应该锁定在线用户需要的所有任何数据（不管是数据库还是文件），
+即使只需要锁定几秒钟的时间。同时还应该每处理一批事务就提交一次数据库。这减少了其他程序不可用的数据数据量，也压缩了数据不可用的时间。
 
-Another option to minimize physical locking is to have logical row-level locking
-implemented with either an Optimistic Locking Pattern or a Pessimistic Locking Pattern.
+另一个可以使用的方案就是使用逻辑行基本的锁定实现来替代物理锁定。
+通过使用乐观锁（Optimistic Locking ）或悲观锁（Pessimistic Locking）模式。
 
 
-* Optimistic locking assumes a low likelihood of record contention. It typically means
-inserting a timestamp column in each database table used concurrently by both batch and
-on-line processing. When an application fetches a row for processing, it also fetches the
-timestamp. As the application then tries to update the processed row, the update uses the
-original timestamp in the WHERE clause. If the timestamp matches, the data and the
-timestamp are updated. If the timestamp does not match, this indicates that another
-application has updated the same row between the fetch and the update attempt. Therefore,
-the update cannot be performed.
+* 乐观锁假设记录争用的可能性很低。这通常意味着并发批处理和在线处理所使用的每个数据表中都有一个时间戳列。
+当程序读取一行进行处理时，同时也获得对应的时间戳。当程序处理完该行以后尝试更新时，在 update 操作的 WHERE 子句中使用原来的时间戳作为条件。
+如果时间戳相匹配，则数据和时间戳都更新成功。如果时间戳不匹配，这表明在本程序上次获取和此次更新这段时间内已经有另一个程序修改了同一条记录,因此更新不会被执行。
 
 
-* Pessimistic locking is any locking strategy that assumes there is a high likelihood of
-record contention and therefore either a physical or logical lock needs to be obtained at
-retrieval time. One type of pessimistic logical locking uses a dedicated lock-column in
-the database table. When an application retrieves the row for update, it sets a flag in
-the lock column. With the flag in place, other applications attempting to retrieve the
-same row logically fail. When the application that sets the flag updates the row, it also
-clears the flag, enabling the row to be retrieved by other applications. Please note that
-the integrity of data must be maintained also between the initial fetch and the setting
-of the flag, for example by using db locks (such as `SELECT FOR UPDATE`). Note also that
-this method suffers from the same downside as physical locking except that it is somewhat
-easier to manage building a time-out mechanism that gets the lock released if the user
-goes to lunch while the record is locked.
+* 悲观锁定策略假设记录争用的可能性很高，因此在检索时需要获得一个物理锁或逻辑锁。有一种悲观逻辑锁在数据表中使用一个专用的 lock-column 列。
+当程序想要为更新目的而获取一行时，它在 lock column 上设置一个标志。如果为某一行设置了标志位，其他程序在试图获取同一行时将会逻辑上获取失败。
+当设置标志的程序更新该行时，它也同时清除标志位，允许其他程序获取该行。
+请注意，在初步获取和初次设置标志位这段时间内必须维护数据的完整性，比如使用数据库锁（例如，SELECT FOR UPDATE）。
+还请注意，这种方法和物理锁都有相同的缺点，除了它在构建一个超时机制时比较容易管理。比如记录而用户去吃午餐了，则超时时间到了以后锁会被自动释放。
 
-These patterns are not necessarily suitable for batch processing, but they might be used
-for concurrent batch and on-line processing (such as in cases where the database does not
-support row-level locking). As a general rule, optimistic locking is more suitable for
-on-line applications, while pessimistic locking is more suitable for batch applications.
-Whenever logical locking is used, the same scheme must be used for all applications
-accessing data entities protected by logical locks.
+这些模式并不一定适用于批处理，但他们可以被用在并发批处理和在线处理的情况下（例如,数据库不支持行级锁）。作为一般规则，乐观锁更适合于在线应用，
+而悲观锁更适合于批处理应用。只要使用了逻辑锁，那么所有访问逻辑锁保护的数据的程序都必须采用同样的方案。
 
-Note that both of these solutions only address locking a single record. Often, we may
-need to lock a logically related group of records. With physical locks, you have to
-manage these very carefully in order to avoid potential deadlocks. With logical locks, it
-is usually best to build a logical lock manager that understands the logical record
-groups you want to protect and that can ensure that locks are coherent and
-non-deadlocking. This logical lock manager usually uses its own tables for lock
-management, contention reporting, time-out mechanism, and other concerns.
+请注意：这两种解决方案都只锁定（address locking）单条记录。但很多情况下我们需要锁定一组相关的记录。如果使用物理锁，你必须非常小心地管理这些以避免潜在的死锁。
+如果使用逻辑锁，通常最好的解决办法是创建一个逻辑锁管理器，使管理器能理解你想要保护的逻辑记录分组（groups），并确保连贯和没有死锁（non-deadlocking）。
+这种逻辑锁管理器通常使用其私有的表来进行锁管理、争用报告、超时机制 等等。
 
-*3. Parallel Processing* Parallel processing allows multiple batch runs or jobs to run in
-parallel to minimize the total elapsed batch processing time. This is not a problem as
-long as the jobs are not sharing the same files, db-tables, or index spaces. If they do,
-this service should be implemented using partitioned data. Another option is to build an
-architecture module for maintaining interdependencies by using a control table. A control
-table should contain a row for each shared resource and whether it is in use by an
-application or not. The batch architecture or the application in a parallel job would
-then retrieve information from that table to determine if it can get access to the
-resource it needs or not.
+*3. 并行处理* 并行处理允许多个批量处理运行（run）/任务（job）同时并行地运行。以使批量处理总运行时间降到最低。
+如果多个任务不使用相同的文件、数据表、索引空间时，批量处理这些不算什么问题。如果确实存在共享和竞争，那么这个服务就应该使用分区数据来实现。
+另一种选择是使用控制表来构建一个架构模块以维护他们之间的相互依赖关系。控制表应该为每个共享资源分配一行记录，不管这些资源是否被某个程序所使用。
+执行并行作业的批处理架构或程序随后将查询这个控制表，以确定是否可以访问所需的资源。
 
-If the data access is not a problem, parallel processing can be implemented through the
-use of additional threads to process in parallel.  In the mainframe environment, parallel
-job classes have traditionally been used, in order to ensure adequate CPU time for all
-the processes. Regardless, the solution has to be robust enough to ensure time slices for
-all the running processes.
+如果解决了数据访问的问题，并行处理就可以通过使用额外的线程来并行实现。在传统的大型主机环境中，并行作业类上通常被用来确保所有进程都有充足的 CPU 时间。
+无论如何，解决方案必须足够强劲，以确保所有正在运行的进程都有足够的运行处理时间。
 
-Other key issues in parallel processing include load balancing and the availability of
-general system resources such as files, database buffer pools, and so on. Also note that
-the control table itself can easily become a critical resource.
+并行处理的其他关键问题还包括负载平衡以及一般系统资源的可用性（如文件、数据库缓冲池等）。请注意，控制表本身也可能很容易变成一个至关重要的资源（有可能发生严重竞争）。
 
-*4. Partitioning* Using partitioning allows multiple versions of large batch applications
+*4. 分区* Using partitioning allows multiple versions of large batch applications
 to run concurrently. The purpose of this is to reduce the elapsed time required to
 process long batch jobs. Processes that can be successfully partitioned are those where
 the input file can be split and/or the main database tables partitioned to allow the
