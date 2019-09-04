@@ -244,44 +244,30 @@ image::{batch-asciidoc}images/spring-batch-layers.png[Figure 1.1: 批量层级�
 
 并行处理的其他关键问题还包括负载平衡以及一般系统资源的可用性（如文件、数据库缓冲池等）。请注意，控制表本身也可能很容易变成一个至关重要的资源（有可能发生严重竞争）。
 
-*4. 分区* Using partitioning allows multiple versions of large batch applications
-to run concurrently. The purpose of this is to reduce the elapsed time required to
-process long batch jobs. Processes that can be successfully partitioned are those where
-the input file can be split and/or the main database tables partitioned to allow the
-application to run against different sets of data.
+*4. 分区* 分区技术允许多版本的大型批处理程序并发地（concurrently）运行。这样做的目的是减少超长批处理作业过程所需的时间。
+可以成功分区的过程主要是那些可以拆分的输入文件 和/或 主要的数据库表被分区以允许程序使用不同的数据来运行。
 
-In addition, processes which are partitioned must be designed to only process their
-assigned data set. A partitioning architecture has to be closely tied to the database
-design and the database partitioning strategy. Note that database partitioning does not
-necessarily mean physical partitioning of the database, although in most cases this is
-advisable. The following picture illustrates the partitioning approach:
+此外,被分区的过程必须设计为只处理分配给他的数据集。分区架构与数据库设计和数据库分区策略是密切相关的。
+请注意，数据库分区并不一定指数据库需要在物理上实现分区，尽管在大多数情况下这是明智的。
+下面的图片展示了分区的方法：
 
-.Partitioned Process
-image::{batch-asciidoc}images/partitioned.png[Figure 1.2: Partitioned Process, scaledwidth="60%"]
+.分区处理
+image::{batch-asciidoc}images/partitioned.png[Figure 1.2: 分区处理, scaledwidth="60%"]
 
 
-The architecture should be flexible enough to allow dynamic configuration of the number
-of partitions. Both automatic and user controlled configuration should be considered.
-Automatic configuration may be based on parameters such as the input file size and the
-number of input records.
+系统架构应该足够灵活，以允许动态配置分区的数量。自动控制和用户配置都应该纳入考虑范围。
+自动配置可以根据参数来决定，例如输入文件大小 和/或 输入记录的数量。
 
-*4.1 Partitioning Approaches* Selecting a partitioning approach has to be done on a
-case-by-case basis. The  following list describes some of the possible partitioning
-approaches:
+*4.1 分区方案* 下面列出了一些可能的分区方案，至于具体选择哪种分区方案，要根据具体情况来确定：
 
-_1. Fixed and Even Break-Up of Record Set_
+_1. 固定和均衡拆分记录集_
 
-This involves breaking the input record set into an even number of portions (for example,
-10, where each portion has exactly 1/10th of the entire record set). Each portion is then
-processed by one instance of the batch/extract application.
+这涉及到将输入的记录集合分解成均衡的部分（例如，拆分为 10 份，这样每部分是整个数据集的十分之一）。
+每个拆分的部分稍后由一个批处理/提取程序实例来处理。
 
-In order to use this approach, preprocessing is required to split the recordset up. The
-result of this split will be a lower and upper bound placement number which can be used
-as input to the batch/extract application in order to restrict its processing to only its
-portion.
+为了使用这种方案，需要在预处理时候就将记录集进行拆分。拆分的结果有一个最大值和最小值的位置，这两个值可以用作限制每个 批处理/提取程序处理部分的输入。
 
-Preprocessing could be a large overhead, as it has to calculate and determine the bounds
-of each portion of the record set.
+预处理可能有一个很大的开销，因为它必须计算并确定的每部分数据集的边界。
 
 _2. Break up by a Key Column_
 
