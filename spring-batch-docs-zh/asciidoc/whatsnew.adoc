@@ -38,7 +38,6 @@ Spring Batch 4.2 添加了下面的新特性：
 有关更多这个新组建的信息，请参考： https://docs.spring.io/spring-batch/4.2.x/api/index.html[Javadoc].
 
 [[whatsNewDocs]]
-=== Documentation updates
+=== 文档更新
 
-The reference documentation has been updated to match the same style as other
-Spring projects.
+对参考的文档进行更新，以便于与其他 Spring 项目的文档风格保持一致。
