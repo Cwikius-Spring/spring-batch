@@ -28,15 +28,14 @@ Spring Batch 4.2 添加了下面的新特性：
 [[whatsNewKafka]]
 === Apache Kafka item 读取/写入
 
-本发行版本添加了一个新的 `KafkaItemReader` 和 `KafkaItemWriter` 用来从 Kafka 的 topics 中读取和写入。
+本发行版本添加了一个新的 `KafkaItemReader` 和 `KafkaItemWriter`， 用来从 Kafka 的 topics 中读取和写入。
 有关更多这个新组建的信息，请参考： https://docs.spring.io/spring-batch/4.2.x/api/index.html[Javadoc]。
 
 [[whatsNewAvro]]
-=== Apache Avro item reader/writer
+=== Apache Avro item 读取/写入
 
-This release adds a new `AvroItemReader` and `AvroItemWriter` to read data from and
-write it to Avro resources. For more details about these new components, please refer
-to the https://docs.spring.io/spring-batch/4.2.x/api/index.html[Javadoc].
+本发行版本添加了一个新的 `AvroItemReader` 和 `AvroItemWriter`， 用来从 Avro 资源中读取和写入。
+有关更多这个新组建的信息，请参考： https://docs.spring.io/spring-batch/4.2.x/api/index.html[Javadoc].
 
 [[whatsNewDocs]]
 === Documentation updates
