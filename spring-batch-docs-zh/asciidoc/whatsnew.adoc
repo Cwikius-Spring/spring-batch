@@ -8,10 +8,10 @@
 
 Spring Batch 4.2 添加了下面的新特性：
 
-* Support for batch metrics with https://micrometer.io[Micrometer]
-* Support for reading/writing data from/to https://kafka.apache.org[Apache Kafka] topics
-* Support for reading/writing data from/to https://avro.apache.org[Apache Avro] resources
-* Improved documentation
+* 使用 https://micrometer.io[Micrometer] 来支持批量指标（batch metrics）
+* 支持从 https://kafka.apache.org[Apache Kafka] topics 读取/写入（reading/writing） 数据
+* 支持从 https://avro.apache.org[Apache Avro] 资源中读取/写入（reading/writing） 数据
+* 改进支持文档
 
 [[whatsNewMetrics]]
 === Batch metrics with Micrometer
