@@ -269,156 +269,98 @@ _1. 固定和均衡拆分记录集_
 
 预处理可能有一个很大的开销，因为它必须计算并确定的每部分数据集的边界。
 
-_2. Break up by a Key Column_
+_2. 通过关键字段（Key Column）拆分_
 
-This involves breaking up the input record set by a key column, such as a location code,
-and assigning data from each key to a batch instance. In order to achieve this, column
-values can be either:
+这涉及到将输入记录按照某个关键字段来拆分，比如一个地区代码（location code），并将每个键分配给一个批处理实例。为了达到这个目标，也可以使用列值：
 
-* Assigned to a batch instance by a partitioning table (described later in this
-section).
+* 通过分区表来指派给一个批量处理实例。
 
-* Assigned to a batch instance by a portion of the value (such as 0000-0999, 1000 - 1999,
-and so on).
+* 通过值的一部分（例如 0000-0999,1000-1999等）分配给批处理实例。
 
-Under option 1, adding new values means a manual reconfiguration of the batch/extract to
-ensure that the new value is added to a particular instance.
+在选项 1 下，添加新值意味着手动重新配置批处理/提取以确保将新值添加到特定实例。
 
-Under option 2, this ensures that all values are covered via an instance of the batch
-job. However, the number of values processed by one instance is dependent on the
-distribution of column values (there may be a large number of locations in the 0000-0999
-range, and few in the 1000-1999 range). Under this option, the data range should be
-designed with partitioning in mind.
+在选项 2 下，这可确保通过批处理作业的实例覆盖所有值。但是，一个实例处理的值的数量取决于列值的分布（0000-0999范围内可能有大量位置，1000-1999范围内可能很少）。
+在此选项下，数据范围应设计为考虑分区。
 
-Under both options, the optimal even distribution of records to batch instances cannot be
-realized. There is no dynamic configuration of the number of batch instances used.
+在这两个选项下，无法实现记录到批处理实例的最佳均匀分布。没有使用批处理实例数的动态配置。
 
-_3. Breakup by Views_
+_3. 通过视图（Views）_
 
-This approach is basically breakup by a key column but on the database level. It involves
-breaking up the recordset into views. These views are used by each instance of the batch
-application during its processing. The breakup is done by grouping the data.
+这种方法基本上是根据键列来分解，但不同的是在数据库级进行分解。它涉及到将记录集分解成视图。这些视图将被批处理程序的各个实例在处理时使用。分解将通过数据分组来完成。
 
-With this option, each instance of a batch application has to be configured to hit a
-particular view (instead of the master table). Also, with the addition of new data
-values, this new group of data has to be included into a view. There is no dynamic
-configuration capability, as a change in the number of instances results in a change to
-the views.
+使用这个方法时，批处理的每个实例都必须为其配置一个特定的视图（而非主表）。当然,对于新添加的数据，这个新的数据分组必须被包含在某个视图中。
+也没有自动配置功能，实例数量的变化将导致视图需要进行相应的改变。
 
-_4. Addition of a Processing Indicator_
+_4. 附加的处理识别器_
 
-This involves the addition of a new column to the input table, which acts as an
-indicator. As a preprocessing step, all indicators are marked as being non-processed.
-During the record fetch stage of the batch application, records are read on the condition
-that that record is marked as being non-processed, and once they are read (with lock),
-they are marked as being in processing. When that record is completed, the indicator is
-updated to either complete or error. Many instances of a batch application can be started
-without a change, as the additional column ensures that a record is only processed once.
+这涉及到输入表一个附加的新列，它充当一个指示器。在预处理阶段，所有指示器都被标志为未处理。在批处理程序获取记录阶段，只会读取被标记为未处理的记录，
+一旦他们被读取（并加锁），它们就被标记为正在处理状态。当记录处理完成，指示器将被更新为完成或错误。
+批处理程序的多个实例不需要改变就可以开始，因为附加列确保每条纪录只被处理一次。
 // TODO On completion, what is the record marked as? Same for on error. (I expected a
-sentence or two on the order of "On completion, indicators are marked as being
-complete.")
+在“完成时，指标被标记为完成”的顺序中的一两句话。
 
-With this option, I/O on the table increases dynamically. In the case of an updating
-batch application, this impact is reduced, as a write must occur anyway.
+使用该选项时，表上的I/O会动态地增长。在批量更新的程序中，这种影响被降低了，因为写操作是必定要进行的。
 
-_5. Extract Table to a Flat File_
+_5. 提取表到无格式文件_
 
-This involves the extraction of the table into a file. This file can then be split into
-multiple segments and used as input to the batch instances.
+这包括将表中的数据提取到一个文件中。然后可以将这个文件拆分成多个部分，作为批处理实例的输入。
 
-With this option, the additional overhead of extracting the table into a file and
-splitting it may cancel out the effect of multi-partitioning. Dynamic configuration can
-be achieved by changing the file splitting script.
+使用这个选项时，将数据提取到文件中，并将文件拆分的额外开销，有可能抵消多分区处理（multi-partitioning）的效果。可以通过改变文件分割脚本来实现动态配置。
 
-_6. Use of a Hashing Column_
+_6. 使用哈希列（Hashing Column）_
 
-This scheme involves the addition of a hash column (key/index) to the database tables
-used to retrieve the driver record. This hash column has an indicator to determine which
-instance of the batch application processes this particular row. For example, if there
-are three batch instances to be started, then an indicator of 'A' marks a row for
-processing by instance 1, an indicator of 'B' marks a row for processing by instance 2,
-and an indicator of 'C' marks a row for processing by instance 3.
+这个计划需要在数据库表中增加一个哈希列（key/index）来检索驱动（driver）记录。这个哈希列将有一个指示器来确定将由批处理程序的哪个实例处理某个特定的行。
+例如，如果启动了三个批处理实例，那么 “A” 指示器将标记某行由实例 1 来处理，“B”将标记着将由实例 2 来处理，“C”将标记着将由实例 3 来处理，以此类推。
 
-The procedure used to retrieve the records would then have an additional `WHERE` clause
-to select all rows marked by a particular indicator. The inserts in this table would
-involve the addition of the marker field, which would be defaulted to one of the
-instances (such as 'A').
+稍后用于检索记录的过程（procedure）程序，将有一个额外的 WHERE 子句来选择以一个特定指标标记的所有行。
+这个表的插入（insert）需要附加的标记字段，默认值将是其中的某一个实例（例如“A”）。
 
-A simple batch application would be used to update the indicators, such as to
-redistribute the load between the different instances. When a sufficiently large number
-of new rows have been added, this batch can be run (anytime, except in the batch window)
-to redistribute the new rows to other instances.
+一个简单的批处理程序将被用来更新不同实例之间的重新分配负载的指标。当添加足够多的新行时，这个批处理会被运行（在任何时间，除了在批处理窗口中）。
 // TODO Why not in the batch window?
 
-Additional instances of the batch application only require the running of the batch
-application as described in the preceding paragraphs to redistribute the indicators to
-work with a new number of instances.
+批处理应用程序的其他实例只需要像上面这样的批处理程序运行着以重新分配指标，以决定新实例的数量。
 
-*4.2 Database and Application Design Principles*
+*4.2 数据库和应用设计原则*
 
-An architecture that supports multi-partitioned applications which run against
-partitioned database tables using the key column approach should include a central
-partition repository for storing partition parameters. This provides flexibility and
-ensures maintainability. The repository generally consists of a single table, known as
-the partition table.
+如果一个支持多分区（multi-partitioned）的应用程序架构，基于数据库采用关键列（key column）分区方法拆成的多个表，则应该包含一个中心分区仓库来存储分区参数。
+这种方式提供了灵活性，并保证了可维护性。这个中心仓库通常只由单个表组成，叫做分区表。
 
-Information stored in the partition table is static and, in general, should be maintained
-by the DBA. The table should consist of one row of information for each partition of a
-multi-partitioned application. The table should have columns for  Program ID Code,
-Partition Number (logical ID of the partition), Low Value of the db key column for this
-partition, and High Value of the db key column for this partition.
+存储在分区表中的信息应该是是静态的，并且只能由 DBA 维护。每个多分区程序对应的单个分区有一行记录，组成这个表。
+这个表应该包含这些列：程序 ID 编号，分区编号（分区的逻辑ID），一个分区对应的关键列（key column）的最小值，分区对应的关键列的最大值。
 
-On program start-up, the program `id` and partition number should be passed to the
-application from the architecture (specifically, from the Control Processing Tasklet). If
-a key column approach is used, these variables are used to read the partition table in
-order to determine what range of data the application is to process. In addition the
-partition number must be used throughout the processing to:
+在程序启动时，应用程序架构（Control Processing Tasklet， 控制处理微线程）应该将程序 `id` 和分区号传递给该程序。
+这些变量被用于读取分区表，来确定应用程序应该处理的数据范围（如果使用关键列的话）。另外分区号必须在整个处理过程中用来：
 
-* Add to the output files/database updates in order for the merge process to work
-properly.
-* Report normal processing to the batch log and any errors to the architecture error
-handler.
+* 为了使合并程序正常工作，需要将分区号添加到输出文件/数据库更新
+* 向框架的错误处理程序报告正常处理批处理日志和执行期间发生的所有错误
 
-*4.3 Minimizing Deadlocks*
+*4.3 死锁最小化*
 
-When applications run in parallel or are partitioned, contention in database resources
-and deadlocks may occur. It is critical that the database design team eliminates
-potential contention situations as much as possible as part of the database design.
+当程序并行或分区运行时,会导致数据库资源的争用,还可能会发生死锁（Deadlocks）。其中的关键是数据库设计团队在进行数据库设计时必须考虑尽可能消除潜在的竞争情况。
 
-Also, the developers must ensure that the database index tables are designed with
-deadlock prevention and performance in mind.
+还要确保设计数据库表的索引时考虑到性能以及死锁预防。
 
-Deadlocks or hot spots often occur in administration or architecture tables, such as log
-tables, control tables, and lock tables. The implications of these should be taken into
-account as well. A realistic stress test is crucial for identifying the possible
-bottlenecks in the architecture.
+死锁或热点往往发生在管理或架构表上,如日志表、控制表、锁表（lock tables）。这些影响也应该纳入考虑。为了确定架构可能的瓶颈，一个真实的压力测试是至关重要的。
 
-To minimize the impact of conflicts on data, the architecture should provide services
-such as wait-and-retry intervals when attaching to a database or when encountering a
-deadlock. This means a built-in mechanism to react to certain database return codes and,
-instead of issuing an immediate error, waiting a predetermined amount of time and
-retrying the database operation.
+要最小化数据冲突的影响，架构应该提供一些服务，如附加到数据库或遇到死锁时的 等待-重试（wait-and-retry）间隔时间。
+这意味着要有一个内置的机制来处理数据库返回码，而不是立即引发错误处理，需要等待一个预定的时间并重试执行数据库操作。
 
-*4.4 Parameter Passing and Validation*
+*4.4 参数处理和校验*
 
-The partition architecture should be relatively transparent to application developers.
-The architecture should perform all tasks associated with running the application in a
-partitioned mode, including:
+对程序开发人员来说，分区架构应该相对透明。框架以分区模式运行时应该执行的相关任务包括：
 
-* Retrieving partition parameters before application start-up.
-* Validating partition parameters before application start-up.
-* Passing parameters to the application at start-up.
+* 在程序启动之前获取分区参数
+* 在程序启动之前验证分区参数
+* 在启动时将参数传递给应用程序
 
-The validation should include checks to ensure that:
+验证（validation）要包含必要的检查，以确保：
 
-* The application has sufficient partitions to cover the whole data range.
-* There are no gaps between partitions.
+* 应用程序已经足够涵盖整个数据的分区
+* 在各个分区之间没有遗漏断代（gaps）
 
-If the database is partitioned, some additional validation may be necessary to ensure
-that a single partition does not span database partitions.
+如果数据库是分区的，可能需要一些额外的验证来保证单个分区不会跨越数据库的片区。
 
-Also, the architecture should take into consideration the consolidation of partitions.
-Key questions include:
+体系架构应该考虑整合分区(partitions).包括以下关键问题:
 
-* Must all the partitions be finished before going into the next job step?
-* What happens if one of the partitions aborts?
+* 在进入下一个任务步骤之前是否所有的分区都必须完成？
+* 如果一个分区 Job 中止了要怎么处理？
