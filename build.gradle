@@ -411,6 +411,10 @@ project('spring-batch-docs') {
 	description = 'Spring Batch Docs'
 }
 
+project('spring-batch-docs-zh') {
+	description = 'Spring Batch Docs ZH'
+}
+
 project('spring-batch-core-tests') {
 	description = 'Spring Batch Core Tests'
     project.tasks.findByPath("artifactoryPublish")?.enabled = false
@@ -681,34 +685,47 @@ task prepareAsciidocBuild(type: Sync) {
 }
 
 asciidoctorPdf {
-	dependsOn prepareAsciidocBuild
-	baseDirFollowsSourceFile()
-
-	asciidoctorj {
-		sourceDir "$buildDir/asciidoc/assemble"
-		inputs.dir(sourceDir)
-		sources {
-			include 'index-single.adoc'
-		}
-		options doctype: 'book'
-		logDocuments = true
-		attributes 'icons': 'font',
-		'sectanchors': '',
-		'sectnums': '',
-		'toc': '',
-		'source-highlighter' : 'coderay',
-		revnumber: project.version,
-		'project-version': project.version
+task prepareAsciidocBuildZH(type: Sync) {
+	dependsOn configurations.docs
+	// copy doc resources
+	from {
+		configurations.docs.collect { zipTree(it) }
 	}
+	// and doc sources
+	from "spring-batch-docs-zh/asciidoc/"
+	// to a build directory of your choice
+	into "$buildDir/asciidoc/assemble/zh"
+
+}
+
+
+task('makePDFZH', type: org.asciidoctor.gradle.AsciidoctorTask){
+	dependsOn prepareAsciidocBuildZH
+	backends 'pdf'
+	sourceDir "$buildDir/asciidoc/assemble/zh"
+	sources {
+		include 'index-single.adoc'
+	}
+	options doctype: 'book', eruby: 'erubis'
+	logDocuments = true
+	attributes 'icons': 'font',
+			'sectanchors': '',
+			'sectnums': '',
+			'toc': '',
+			'source-highlighter' : 'coderay',
+			revnumber: project.version
 }
 
 asciidoctor {
 	dependsOn asciidoctorPdf
 	baseDirFollowsSourceFile()
+	dependsOn makePDF
+	dependsOn makePDFZH
+	backends 'html5'
 	sourceDir "$buildDir/asciidoc/assemble"
 	resources {
 		from(sourceDir) {
-			include 'images/*', 'css/**', 'js/**'
+			include 'images/*', 'css/**', 'js/**', 'zh/images/*', 'zh/css/**', 'zh/js/**'
 		}
 	}
 	options doctype: 'book', eruby: 'erubis'
