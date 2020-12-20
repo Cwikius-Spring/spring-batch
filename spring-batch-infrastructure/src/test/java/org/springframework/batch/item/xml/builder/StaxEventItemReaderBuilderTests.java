@@ -15,9 +15,6 @@
  */
 package org.springframework.batch.item.xml.builder;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.stream.XMLInputFactory;
 
@@ -126,41 +123,6 @@ public class StaxEventItemReaderBuilderTests {
 
 		Object executionContextUserSupport = getField(reader, "executionContextUserSupport");
 		assertEquals("fooReader", getField(executionContextUserSupport, "name"));
-	}
-
-	@Test
-	public void testCustomEncoding() throws Exception {
-		Jaxb2Marshaller unmarshaller = new Jaxb2Marshaller();
-		unmarshaller.setClassesToBeBound(Foo.class);
-
-		Charset charset = StandardCharsets.ISO_8859_1;
-		ByteBuffer xml = charset.encode(SIMPLE_XML);
-
-		StaxEventItemReader<Foo> reader = new StaxEventItemReaderBuilder<Foo>()
-				.name("fooReader")
-				.resource(new ByteArrayResource(xml.array()))
-				.encoding(charset.name())
-				.addFragmentRootElements("foo")
-				.currentItemCount(1)
-				.maxItemCount(2)
-				.unmarshaller(unmarshaller)
-				.xmlInputFactory(XMLInputFactory.newInstance())
-				.build();
-
-		reader.afterPropertiesSet();
-
-		ExecutionContext executionContext = new ExecutionContext();
-		reader.open(executionContext);
-		Foo item = reader.read();
-		assertNull(reader.read());
-		reader.update(executionContext);
-
-		reader.close();
-
-		assertEquals(4, item.getFirst());
-		assertEquals("five", item.getSecond());
-		assertEquals("six", item.getThird());
-		assertEquals(2, executionContext.size());
 	}
 
 	@Test(expected = ItemStreamException.class)
