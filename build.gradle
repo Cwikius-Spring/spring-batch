@@ -4,6 +4,7 @@
 
 buildscript {
 	repositories {
+		mavenCentral()
 		maven { url 'https://repo.spring.io/plugins-release' }
 		maven { url 'https://plugins.gradle.org/m2/' }
 	}
@@ -12,19 +13,20 @@ buildscript {
 		classpath 'io.spring.gradle:spring-io-plugin:0.0.5.RELEASE'
 		classpath "io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE"
 		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
-		classpath "org.asciidoctor:asciidoctor-gradle-plugin:1.5.6"
-		classpath "org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.16"
 	}
 }
 
 plugins {
 	id 'org.sonarqube' version '2.6.2'
+	id 'org.asciidoctor.jvm.pdf' version '3.1.0'
+	id 'org.asciidoctor.jvm.gems' version '3.1.0'
+	id 'org.asciidoctor.jvm.convert' version '3.1.0'
 }
 
 ext {
 	linkHomepage = 'https://projects.spring.io/spring-batch/'
 	linkCi       = 'https://build.spring.io/browse/BATCH'
-	linkIssue    = 'https://jira.spring.io/browse/BATCH'
+	linkIssue    = 'https://github.com/spring-projects/spring-batch/issues'
 	linkScmUrl           = 'https://github.com/spring-projects/spring-batch'
 	linkScmConnection    = 'git://github.com/spring-projects/spring-batch.git'
 	linkScmDevConnection = 'git@github.com:spring-projects/spring-batch.git'
@@ -36,46 +38,45 @@ allprojects {
 	group = 'org.springframework.batch'
 
 	repositories {
+		mavenCentral()
 		maven { url 'https://repo.spring.io/libs-snapshot' }
 		maven { url 'https://repo.spring.io/libs-milestone' }
 		maven { url 'https://repo.spring.io/plugins-release' }
-		mavenCentral()
 	}
 
 	ext {
 
 		environmentProperty = project.hasProperty('environment') ? getProperty('environment') : 'hsql'
 
-		springVersionDefault = '5.2.0.BUILD-SNAPSHOT'
+		springVersionDefault = '5.3.2'
 		springVersion = project.hasProperty('springVersion') ? getProperty('springVersion') : springVersionDefault
-		springRetryVersion = '1.2.4.RELEASE'
-		springAmqpVersion = '2.2.0.BUILD-SNAPSHOT'
-		springDataCommonsVersion = '2.2.0.BUILD-SNAPSHOT'
-		springDataGemfireVersion = '2.2.0.BUILD-SNAPSHOT'
-		springDataJpaVersion = '2.2.0.BUILD-SNAPSHOT'
-		springDataMongodbVersion = '2.2.0.BUILD-SNAPSHOT'
-		springDataNeo4jVersion = '5.2.0.BUILD-SNAPSHOT'
-		springIntegrationVersion = '5.2.0.BUILD-SNAPSHOT'
-		springKafkaVersion = '2.3.0.BUILD-SNAPSHOT'
-		springLdapVersion = '2.3.2.RELEASE'
+		springRetryVersion = '1.3.0'
+		springAmqpVersion = '2.3.2'
+		springDataCommonsVersion = '2.4.2'
+		springDataGeodeVersion = '2.4.2'
+		springDataJpaVersion = '2.4.2'
+		springDataMongodbVersion = '3.1.2'
+		springIntegrationVersion = '5.4.2'
+		springKafkaVersion = '2.6.4'
+		springLdapVersion = '2.3.3.RELEASE'
 
-		activemqVersion = '5.15.10'
-		apacheAvroVersion ='1.9.0'
-		aspectjVersion = '1.9.4'
-		commonsDdbcpVersion = '2.7.0'
-		commonsIoVersion = '2.6'
-		commonsLangVersion = '3.9'
+		activemqVersion = '5.15.13'
+		apacheAvroVersion ='1.9.2'
+		aspectjVersion = '1.9.6'
+		commonsDdbcpVersion = '2.8.0'
+		commonsIoVersion = '2.8.0'
+		commonsLangVersion = '3.11'
 		commonsPoolVersion = '1.6'
 		derbyVersion = '10.14.2.0'
-		groovyVersion = '2.5.8'
-		hamcrestVersion = '2.1'
-		h2databaseVersion = '1.4.199'
-		hibernateVersion = '5.4.4.Final'
-		hibernateValidatorVersion = '6.0.17.Final'
+		groovyVersion = '2.5.14'
+		hamcrestVersion = '2.2'
+		h2databaseVersion = '1.4.200'
+		hibernateVersion = '5.4.25.Final'
+		hibernateValidatorVersion = '6.1.6.Final'
 		javaxElVersion = '3.0.0'
-		hsqldbVersion = '2.5.0'
-		jackson2Version = '2.9.9'
-		gsonVersion = '2.8.5'
+		hsqldbVersion = '2.5.1'
+		jackson2Version = '2.11.3'
+		gsonVersion = '2.8.6'
 		javaMailVersion = '1.6.2'
 		javaxBatchApiVersion = '1.0'
 		javaxAnnotationApiVersion = '1.3.2'
@@ -84,26 +85,30 @@ allprojects {
 		jbatchTckSpi = '1.0'
 		jettisonVersion = '1.2' //? => upgrade to 1.4 and the build fails (deprecated anyway via xstream)
 		jmsVersion = '2.0.1'
-		junitVersion = '4.12'
-		log4jVersion = '2.12.1'
-		mysqlVersion = '8.0.17'
-		mockitoVersion = '3.0.0'
-		postgresqlVersion = '42.2.6'
-		quartzVersion = '2.3.1'
+		junitVersion = '4.13.1'
+		junitJupiterVersion = '5.7.0'
+		log4jVersion = '2.13.3'
+		mysqlVersion = '8.0.22'
+		mockitoVersion = '3.6.28'
+		postgresqlVersion = '42.2.18'
+		quartzVersion = '2.3.2'
 		servletApiVersion = '4.0.1'
 		sqlfireclientVersion = '1.0.3'
-		sqliteVersion = '3.28.0'
-		woodstoxVersion = '5.2.0'
-		xmlunitVersion = '2.6.3'
-		xstreamVersion = '1.4.11.1'
+		sqliteVersion = '3.32.3.2'
+		woodstoxVersion = '6.2.3'
+		xmlunitVersion = '2.7.0'
+		xstreamVersion = '1.4.12'
 		jrubyVersion = '1.7.27'
 		beanshellVersion = '2.0b5'
 		jaxbApiVersion = '2.3.1'
 		jaxbImplVersion = '2.3.0.1'
-		micrometerVersion = '1.2.0'
-		prometheusPushgatewayVersion = '0.6.0'
-		docResourcesVersion = '0.1.1.RELEASE'
-		assertjVersion='3.13.2'
+		micrometerVersion = '1.5.8'
+		prometheusPushgatewayVersion = '0.9.0'
+		docResourcesVersion = '0.2.5'
+		assertjVersion='3.18.1'
+		mongoDbDriverSyncVersion='4.1.1'
+		testcontainersVersion='1.15.0'
+		neo4jVersion='3.2.18'
 	}
 
 	apply plugin: 'idea'
@@ -119,7 +124,7 @@ configure(subprojects - project(":spring-build-src")) { subproject ->
 	apply plugin: 'merge'
 
 	jacoco {
-		toolVersion = "0.8.2"
+		toolVersion = "0.8.5"
 	}
 
     compileJava {
@@ -158,7 +163,6 @@ configure(subprojects - project(":spring-build-src")) { subproject ->
 		systemProperty "ENVIRONMENT", environmentProperty
 
 		jacoco {
-			append = false
 			destinationFile = file("$buildDir/jacoco.exec")
 		}
 
@@ -168,7 +172,6 @@ configure(subprojects - project(":spring-build-src")) { subproject ->
 
 	test {
 		jacoco {
-			append = false
 			destinationFile = file("$buildDir/jacoco.exec")
 		}
 
@@ -226,6 +229,16 @@ configure(subprojects - project(":spring-build-src")) { subproject ->
 	artifacts {
 		archives sourcesJar
 		archives javadocJar
+	}
+
+	configurations.all {
+		resolutionStrategy {
+			eachDependency { DependencyResolveDetails details ->
+				if (details.requested.group == 'org.springframework') {
+					details.useVersion springVersion
+				}
+			}
+		}
 	}
 }
 
@@ -338,6 +351,7 @@ project('spring-batch-infrastructure') {
 		testRuntime "org.beanshell:bsh:$beanshellVersion"
 		testRuntime "com.sun.xml.bind:jaxb-core:$jaxbImplVersion"
 		testRuntime "com.sun.xml.bind:jaxb-impl:$jaxbImplVersion"
+		testRuntime "org.mongodb:mongodb-driver-sync:$mongoDbDriverSyncVersion"
 
 		optional "javax.jms:javax.jms-api:$jmsVersion"
 		optional "com.fasterxml.jackson.core:jackson-databind:${jackson2Version}"
@@ -369,10 +383,8 @@ project('spring-batch-infrastructure') {
 		optional "org.springframework:spring-tx:$springVersion"
 		optional "org.springframework.data:spring-data-commons:$springDataCommonsVersion"
 		optional "org.springframework.data:spring-data-mongodb:$springDataMongodbVersion"
-		optional ("org.springframework.data:spring-data-neo4j:$springDataNeo4jVersion") {
-			exclude group: "org.springframework", module: "spring-aspects"
-		}
-		optional "org.springframework.data:spring-data-gemfire:$springDataGemfireVersion"
+		optional "org.springframework.data:spring-data-geode:$springDataGeodeVersion"
+		optional "org.neo4j:neo4j-ogm-core:$neo4jVersion"
 		compile("com.fasterxml.woodstox:woodstox-core:$woodstoxVersion") { dep ->
 			optional dep
 			exclude group: 'stax', module: 'stax-api'
@@ -393,14 +405,6 @@ project('spring-batch-infrastructure') {
 		testCompileOnly("com.google.code.findbugs:jsr305:3.0.2")
 	}
 
-	if (project.hasProperty('platformVersion')) {
-		def dataNeo4jVersion = dependencyManagement.springIoTestRuntime.managedVersions['org.springframework.data:spring-data-neo4j']
-		if (dataNeo4jVersion?.startsWith('4.')) {
-			tasks.withType(Test).matching { it.name =~ "springIoJdk.Test" }.all {
-				exclude '**/Neo4jItemReaderTests.class'
-			}
-		}
-	}
 }
 
 project('spring-batch-docs') {
@@ -432,8 +436,9 @@ project('spring-batch-core-tests') {
 		testCompile "org.apache.logging.log4j:log4j-core:$log4jVersion"
 		testCompile "org.springframework:spring-test:$springVersion"
 		testCompile "org.springframework:spring-jdbc:$springVersion"
+		testCompile "org.testcontainers:mysql:$testcontainersVersion"
+		testCompile "mysql:mysql-connector-java:$mysqlVersion"
 
-		runtime "mysql:mysql-connector-java:$mysqlVersion"
 		runtime "org.postgresql:postgresql:$postgresqlVersion"
 		runtime "javax.batch:javax.batch-api:$javaxBatchApiVersion"
 
@@ -478,6 +483,7 @@ project('spring-batch-infrastructure-tests') {
 		testCompile("org.springframework:spring-oxm:$springVersion") {
 			exclude group: 'commons-lang', module: 'commons-lang'
 		}
+		testCompile "org.springframework.data:spring-data-jpa:$springDataJpaVersion"
 		testCompile "org.springframework:spring-jdbc:$springVersion"
 		testCompile "org.springframework:spring-test:$springVersion"
 		testCompile "org.mockito:mockito-core:$mockitoVersion"
@@ -519,8 +525,11 @@ project('spring-batch-test') {
 		testCompile "org.hsqldb:hsqldb:$hsqldbVersion"
 		testCompile "org.mockito:mockito-core:$mockitoVersion"
 
+		testRuntime "org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion"
+
 		optional "org.aspectj:aspectjrt:$aspectjVersion"
         optional "javax.batch:javax.batch-api:$javaxBatchApiVersion"
+		optional "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
 	}
 }
 
@@ -611,6 +620,7 @@ project('spring-batch-samples') {
 		compile "org.apache.activemq:activemq-broker:$activemqVersion"
 		compile "io.micrometer:micrometer-registry-prometheus:$micrometerVersion"
 		compile "io.prometheus:simpleclient_pushgateway:$prometheusPushgatewayVersion"
+		compile "org.mongodb:mongodb-driver-sync:$mongoDbDriverSyncVersion"
 
 		testCompile "org.xmlunit:xmlunit-core:$xmlunitVersion"
 		testCompile "org.xmlunit:xmlunit-matchers:$xmlunitVersion"
@@ -642,6 +652,7 @@ project('spring-batch-samples') {
 		optional "org.postgresql:postgresql:$postgresqlVersion"
 		optional "org.springframework:spring-web:$springVersion"
 		optional "org.springframework.data:spring-data-commons:$springDataCommonsVersion"
+		optional "org.springframework.data:spring-data-mongodb:$springDataMongodbVersion"
 		optional "org.springframework.amqp:spring-amqp:$springAmqpVersion"
 		optional ("org.springframework.amqp:spring-rabbit:$springAmqpVersion") {
 			exclude group: "org.springframework", module: "spring-messaging"
@@ -651,12 +662,6 @@ project('spring-batch-samples') {
 
 		optional "javax.batch:javax.batch-api:$javaxBatchApiVersion"
 	}
-}
-
-apply plugin: "org.asciidoctor.convert"
-
-asciidoctorj {
-	version = '1.5.5'
 }
 
 configurations {
@@ -679,6 +684,7 @@ task prepareAsciidocBuild(type: Sync) {
 	into "$buildDir/asciidoc/assemble"
 }
 
+asciidoctorPdf {
 task prepareAsciidocBuildZH(type: Sync) {
 	dependsOn configurations.docs
 	// copy doc resources
@@ -692,22 +698,6 @@ task prepareAsciidocBuildZH(type: Sync) {
 
 }
 
-task('makePDF', type: org.asciidoctor.gradle.AsciidoctorTask){
-	dependsOn prepareAsciidocBuild
-	backends 'pdf'
-	sourceDir "$buildDir/asciidoc/assemble"
-	sources {
-		include 'index-single.adoc'
-	}
-	options doctype: 'book', eruby: 'erubis'
-	logDocuments = true
-	attributes 'icons': 'font',
-		'sectanchors': '',
-		'sectnums': '',
-		'toc': '',
-		'source-highlighter' : 'coderay',
-		revnumber: project.version
-}
 
 task('makePDFZH', type: org.asciidoctor.gradle.AsciidoctorTask){
 	dependsOn prepareAsciidocBuildZH
@@ -727,6 +717,8 @@ task('makePDFZH', type: org.asciidoctor.gradle.AsciidoctorTask){
 }
 
 asciidoctor {
+	dependsOn asciidoctorPdf
+	baseDirFollowsSourceFile()
 	dependsOn makePDF
 	dependsOn makePDFZH
 	backends 'html5'
@@ -746,9 +738,9 @@ asciidoctor {
 		'icons': 'font',
     'sectanchors': '',
 		// use provided highlighter
-		'source-highlighter=highlight.js',
-		'highlightjsdir=js/highlight',
-		'highlightjs-theme=atom-one-dark-reasonable',
+		'source-highlighter': 'highlight.js',
+		'highlightjsdir': 'js/highlight',
+		'highlightjs-theme': 'github',
 		'idprefix': '',
 		'idseparator': '-',
 		'spring-version': project.version,
@@ -784,9 +776,9 @@ task api(type: Javadoc) {
         options.addStringOption('Xdoclint:none', '-quiet')
     }
 
-	source subprojects.collect { project ->
-		project.sourceSets.main.allJava
-	}
+	source subprojects
+			.findAll { it.name != 'spring-batch-samples' && !it.name.endsWith("-tests") }
+			.collect { project -> project.sourceSets.main.allJava }
 	destinationDir = new File(buildDir, "api")
 	classpath = files(subprojects.collect { project ->
 		project.sourceSets.main.compileClasspath
@@ -836,7 +828,7 @@ task docsZip(type: Zip) {
 			into 'api'
 		}
 
-		from (makePDF) {
+		from (asciidoctorPdf) {
 			include "index-single.pdf"
 			rename  'index-single.pdf', 'spring-batch-reference.pdf'
 			into 'reference/pdf'
@@ -978,5 +970,5 @@ or specify the Gradle property `TCK_HOME`, e.g: ./gradlew runTck -PTCK_HOME=/pat
 
 wrapper {
 	description = 'Generates gradlew[.bat] scripts'
-	gradleVersion = '4.10.3'
+	gradleVersion = '6.3'
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 the original author or authors.
+ * Copyright 2016-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,7 +76,8 @@ public class FlatFileItemReaderBuilder<T> {
 
 	private Resource resource;
 
-	private List<String> comments = new ArrayList<>();
+	private List<String> comments =
+			new ArrayList<>(Arrays.asList(FlatFileItemReader.DEFAULT_COMMENT_PREFIXES));
 
 	private int linesToSkip = 0;
 
@@ -171,6 +172,7 @@ public class FlatFileItemReaderBuilder<T> {
 
 	/**
 	 * Add a string to the list of Strings that indicate commented lines.
+	 * Defaults to {@link FlatFileItemReader#DEFAULT_COMMENT_PREFIXES}.
 	 *
 	 * @param comment the string to define a commented line.
 	 * @return The current instance of the builder.
@@ -182,15 +184,16 @@ public class FlatFileItemReaderBuilder<T> {
 	}
 
 	/**
-	 * An array of Strings that indicate lines that are comments (and therefore skipped by
-	 * the reader.
+	 * Set an array of Strings that indicate lines that are comments (and therefore skipped by
+	 * the reader). This method overrides the default comment prefixes which are
+	 * {@link FlatFileItemReader#DEFAULT_COMMENT_PREFIXES}.
 	 *
 	 * @param comments an array of strings to identify comments.
 	 * @return The current instance of the builder.
 	 * @see FlatFileItemReader#setComments(String[])
 	 */
 	public FlatFileItemReaderBuilder<T> comments(String... comments) {
-		this.comments.addAll(Arrays.asList(comments));
+		this.comments = Arrays.asList(comments);
 		return this;
 	}
 
@@ -466,12 +469,12 @@ public class FlatFileItemReaderBuilder<T> {
 			reader.setLineMapper(this.lineMapper);
 		}
 		else {
-			Assert.state(validatorValue == 1 || validatorValue == 2 || validatorValue == 4,
+			Assert.state(validatorValue == 0 || validatorValue == 1 || validatorValue == 2 || validatorValue == 4,
 					"Only one LineTokenizer option may be configured");
 
 			DefaultLineMapper<T> lineMapper = new DefaultLineMapper<>();
 
-			if(this.lineTokenizer != null && this.fieldSetMapper != null) {
+			if(this.lineTokenizer != null) {
 				lineMapper.setLineTokenizer(this.lineTokenizer);
 			}
 			else if(this.fixedLengthBuilder != null) {
@@ -512,10 +515,7 @@ public class FlatFileItemReaderBuilder<T> {
 		}
 
 		reader.setLinesToSkip(this.linesToSkip);
-
-		if(!this.comments.isEmpty()) {
-			reader.setComments(this.comments.toArray(new String[this.comments.size()]));
-		}
+		reader.setComments(this.comments.toArray(new String[this.comments.size()]));
 
 		reader.setSkippedLinesCallback(this.skippedLinesCallback);
 		reader.setRecordSeparatorPolicy(this.recordSeparatorPolicy);

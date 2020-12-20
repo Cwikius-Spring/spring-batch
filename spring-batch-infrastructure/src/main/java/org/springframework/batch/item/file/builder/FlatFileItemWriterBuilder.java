@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2018 the original author or authors.
+ * Copyright 2016-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.batch.item.file.FlatFileFooterCallback;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.FlatFileItemWriter;
@@ -30,7 +33,6 @@ import org.springframework.batch.item.file.transform.FormatterLineAggregator;
 import org.springframework.batch.item.file.transform.LineAggregator;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * A builder implementation for the {@link FlatFileItemWriter}
@@ -43,6 +45,8 @@ import org.springframework.util.StringUtils;
  * @see FlatFileItemWriter
  */
 public class FlatFileItemWriterBuilder<T> {
+
+	protected Log logger = LogFactory.getLog(getClass());
 
 	private Resource resource;
 
@@ -459,7 +463,7 @@ public class FlatFileItemWriterBuilder<T> {
 					"A list of field names or a field extractor is required");
 
 			DelimitedLineAggregator<T> delimitedLineAggregator = new DelimitedLineAggregator<>();
-			if (StringUtils.hasLength(this.delimiter)) {
+			if (this.delimiter != null) {
 				delimitedLineAggregator.setDelimiter(this.delimiter);
 			}
 
@@ -489,10 +493,14 @@ public class FlatFileItemWriterBuilder<T> {
 
 		Assert.isTrue(this.lineAggregator != null || this.delimitedBuilder != null || this.formattedBuilder != null,
 				"A LineAggregator or a DelimitedBuilder or a FormattedBuilder is required");
-		Assert.notNull(this.resource, "A Resource is required");
 
 		if(this.saveState) {
 			Assert.hasText(this.name, "A name is required when saveState is true");
+		}
+
+		if(this.resource == null) {
+			logger.debug("The resource is null. This is only a valid scenario when " +
+					"injecting it later as in when using the MultiResourceItemWriter");
 		}
 
 		FlatFileItemWriter<T> writer = new FlatFileItemWriter<>();

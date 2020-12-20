@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2019-2020 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.apache.kafka.common.TopicPartition;
 
 import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.support.AbstractItemStreamItemReader;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
@@ -42,7 +43,7 @@ import org.springframework.util.Assert;
  * </p>
  *
  * <p>
- * Since {@link KafkaConsumer} is not thread-safe, this reader is not thead-safe.
+ * Since {@link KafkaConsumer} is not thread-safe, this reader is not thread-safe.
  * </p>
  *
  * @author Mathieu Ouellet
@@ -139,12 +140,29 @@ public class KafkaItemReader<K, V> extends AbstractItemStreamItemReader<V> {
 		return this.saveState;
 	}
 
+	/**
+	 * Setter for partition offsets. This mapping tells the reader the offset to start
+	 * reading from in each partition. This is optional, defaults to starting from
+	 * offset 0 in each partition. Passing an empty map makes the reader start
+	 * from the offset stored in Kafka for the consumer group ID.
+	 * 
+	 * <p><strong>In case of a restart, offsets stored in the execution context
+	 * will take precedence.</strong></p>
+	 * 
+	 * @param partitionOffsets mapping of starting offset in each partition
+	 */
+	public void setPartitionOffsets(Map<TopicPartition, Long> partitionOffsets) {
+		this.partitionOffsets = partitionOffsets;
+	}
+
 	@Override
 	public void open(ExecutionContext executionContext) {
 		this.kafkaConsumer = new KafkaConsumer<>(this.consumerProperties);
-		this.partitionOffsets = new HashMap<>();
-		for (TopicPartition topicPartition : this.topicPartitions) {
-			this.partitionOffsets.put(topicPartition, 0L);
+		if (this.partitionOffsets == null) {
+			this.partitionOffsets = new HashMap<>();
+			for (TopicPartition topicPartition : this.topicPartitions) {
+				this.partitionOffsets.put(topicPartition, 0L);
+			}
 		}
 		if (this.saveState && executionContext.containsKey(TOPIC_PARTITION_OFFSETS)) {
 			Map<TopicPartition, Long> offsets = (Map<TopicPartition, Long>) executionContext.get(TOPIC_PARTITION_OFFSETS);
@@ -156,6 +174,7 @@ public class KafkaItemReader<K, V> extends AbstractItemStreamItemReader<V> {
 		this.partitionOffsets.forEach(this.kafkaConsumer::seek);
 	}
 
+	@Nullable
 	@Override
 	public V read() {
 		if (this.consumerRecords == null || !this.consumerRecords.hasNext()) {

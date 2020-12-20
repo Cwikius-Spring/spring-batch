@@ -1,5 +1,5 @@
 /*
- * Copyright 2006-2019 the original author or authors.
+ * Copyright 2006-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,11 @@ import org.springframework.util.SerializationUtils;
 
 /**
  * In-memory implementation of {@link StepExecutionDao}.
+ * 
+ * @deprecated as of v4.3 in favor of using the {@link JdbcStepExecutionDao}
+ * with an in-memory database. Scheduled for removal in v5.0.
  */
+@Deprecated
 public class MapStepExecutionDao implements StepExecutionDao {
 
 	private Map<Long, Map<Long, StepExecution>> executionsByJobExecutionId = new ConcurrentHashMap<>();
@@ -171,5 +175,18 @@ public class MapStepExecutionDao implements StepExecutionDao {
 		for (StepExecution stepExecution: stepExecutions) {
 			saveStepExecution(stepExecution);
 		}
+	}
+
+	@Override
+	public int countStepExecutions(JobInstance jobInstance, String stepName) {
+		int count = 0;
+
+		for (StepExecution stepExecution : executionsByStepExecutionId.values()) {
+			if (stepExecution.getStepName().equals(stepName) && stepExecution.getJobExecution().getJobInstance()
+					.getInstanceId() == jobInstance.getInstanceId()) {
+				count++;
+			}
+		}
+		return count;
 	}
 }

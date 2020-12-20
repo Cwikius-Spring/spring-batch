@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2013 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.core.job.flow.State;
+import org.springframework.batch.core.job.flow.support.DefaultStateTransitionComparator;
 import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.batch.core.job.flow.support.StateTransition;
 import org.springframework.batch.core.job.flow.support.state.DecisionState;
@@ -44,6 +45,7 @@ import org.springframework.core.task.TaskExecutor;
  * conditional transitions that depend on the exit status of the previous step.
  *
  * @author Dave Syer
+ * @author Michael Minella
  *
  * @since 2.2
  *
@@ -67,6 +69,10 @@ public class FlowBuilder<Q> {
 	private EndState completedState;
 
 	private EndState stoppedState;
+
+	private int stepCounter = 0;
+
+	private int flowCounter = 0;
 
 	private int decisionCounter = 0;
 
@@ -244,6 +250,7 @@ public class FlowBuilder<Q> {
 		}
 		addDanglingEndStates();
 		flow.setStateTransitions(transitions);
+		flow.setStateTransitionComparator(new DefaultStateTransitionComparator());
 		dirty = false;
 		return flow;
 	}
@@ -279,7 +286,7 @@ public class FlowBuilder<Q> {
 		if (input instanceof Step) {
 			if (!states.containsKey(input)) {
 				Step step = (Step) input;
-				states.put(input, new StepState(prefix + step.getName(), step));
+				states.put(input, new StepState(prefix + "step" + (stepCounter++), step));
 			}
 			result = states.get(input);
 		}
@@ -292,7 +299,7 @@ public class FlowBuilder<Q> {
 		}
 		else if (input instanceof Flow) {
 			if (!states.containsKey(input)) {
-				states.put(input, new FlowState((Flow) input, prefix + ((Flow) input).getName()));
+				states.put(input, new FlowState((Flow) input, prefix + "flow" + (flowCounter++)));
 			}
 			result = states.get(input);
 		}

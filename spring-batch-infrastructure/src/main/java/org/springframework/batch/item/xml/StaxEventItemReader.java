@@ -1,5 +1,5 @@
 /*
- * Copyright 2006-2019 the original author or authors.
+ * Copyright 2006-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.batch.item.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -39,10 +40,12 @@ import org.springframework.batch.item.xml.stax.DefaultFragmentEventReader;
 import org.springframework.batch.item.xml.stax.FragmentEventReader;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
+import org.springframework.lang.Nullable;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.util.xml.StaxUtils;
 
 /**
  * Item reader for reading XML input based on StAX.
@@ -61,6 +64,8 @@ ResourceAwareItemReaderItemStream<T>, InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(StaxEventItemReader.class);
 
+	public static final String DEFAULT_ENCODING = Charset.defaultCharset().name();
+
 	private FragmentEventReader fragmentReader;
 
 	private XMLEventReader eventReader;
@@ -77,7 +82,9 @@ ResourceAwareItemReaderItemStream<T>, InitializingBean {
 
 	private boolean strict = true;
 
-	private XMLInputFactory xmlInputFactory = StaxUtils.createXmlInputFactory();
+	private XMLInputFactory xmlInputFactory = StaxUtils.createDefensiveInputFactory();
+
+	private String encoding = DEFAULT_ENCODING;
 
 	public StaxEventItemReader() {
 		setName(ClassUtils.getShortName(StaxEventItemReader.class));
@@ -128,6 +135,16 @@ ResourceAwareItemReaderItemStream<T>, InitializingBean {
 	public void setXmlInputFactory(XMLInputFactory xmlInputFactory) {
 		Assert.notNull(xmlInputFactory, "XMLInputFactory must not be null");
 		this.xmlInputFactory = xmlInputFactory;
+	}
+
+	/**
+	 * Set encoding to be used for the input file. Defaults to {@link #DEFAULT_ENCODING}.
+	 *
+	 * @param encoding the encoding to be used
+	 */
+	public void setEncoding(String encoding) {
+		Assert.notNull(encoding, "The encoding must not be null");
+		this.encoding = encoding;
 	}
 
 	/**
@@ -220,7 +237,7 @@ ResourceAwareItemReaderItemStream<T>, InitializingBean {
 		}
 
 		inputStream = resource.getInputStream();
-		eventReader = xmlInputFactory.createXMLEventReader(inputStream);
+		eventReader = xmlInputFactory.createXMLEventReader(inputStream, this.encoding);
 		fragmentReader = new DefaultFragmentEventReader(eventReader);
 		noInput = false;
 
@@ -229,6 +246,7 @@ ResourceAwareItemReaderItemStream<T>, InitializingBean {
 	/**
 	 * Move to next fragment and map it to item.
 	 */
+	@Nullable
 	@Override
 	protected T doRead() throws IOException, XMLStreamException {
 
@@ -252,7 +270,7 @@ ResourceAwareItemReaderItemStream<T>, InitializingBean {
 
 			try {
 				@SuppressWarnings("unchecked")
-				T mappedFragment = (T) unmarshaller.unmarshal(StaxUtils.getSource(fragmentReader));
+				T mappedFragment = (T) unmarshaller.unmarshal(StaxUtils.createStaxSource(fragmentReader));
 				item = mappedFragment;
 			}
 			finally {
@@ -315,7 +333,7 @@ ResourceAwareItemReaderItemStream<T>, InitializingBean {
 		}
 	}
 	
-	private boolean isFragmentRootElementName(QName name) {
+	protected boolean isFragmentRootElementName(QName name) {
 		for (QName fragmentRootElementName : fragmentRootElementNames) {
 			if (fragmentRootElementName.getLocalPart().equals(name.getLocalPart())) {
 				if (!StringUtils.hasText(fragmentRootElementName.getNamespaceURI())

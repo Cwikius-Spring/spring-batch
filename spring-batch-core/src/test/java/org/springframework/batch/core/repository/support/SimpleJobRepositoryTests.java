@@ -1,5 +1,5 @@
 /*
- * Copyright 2006-2018 the original author or authors.
+ * Copyright 2006-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,18 @@
 
 package org.springframework.batch.core.repository.support;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -56,6 +58,7 @@ import org.springframework.batch.core.step.StepSupport;
  * @author Lucas Ward
  * @author Will Schipp
  * @author Dimitrios Liapis
+ * @author Baris Cubukcuoglu
  *
  */
 public class SimpleJobRepositoryTests {
@@ -272,4 +275,24 @@ public class SimpleJobRepositoryTests {
 		jobRepository.createJobExecution("foo", new JobParameters());
 	}
 
+	@Test(expected = IllegalStateException.class)
+	public void testCreateJobExecutionInstanceWithoutExecutions() throws Exception {
+		when(jobInstanceDao.getJobInstance("foo", new JobParameters())).thenReturn(jobInstance);
+		when(jobExecutionDao.findJobExecutions(jobInstance)).thenReturn(Collections.emptyList());
+
+		jobRepository.createJobExecution("foo", new JobParameters());
+	}
+
+	@Test
+	public void testGetStepExecutionCount() {
+		// Given
+		int expectedResult = 1;
+		when(stepExecutionDao.countStepExecutions(jobInstance, "stepName")).thenReturn(expectedResult);
+
+		// When
+		int actualResult = jobRepository.getStepExecutionCount(jobInstance, "stepName");
+
+		// Then
+		assertEquals(expectedResult, actualResult);
+	}
 }
