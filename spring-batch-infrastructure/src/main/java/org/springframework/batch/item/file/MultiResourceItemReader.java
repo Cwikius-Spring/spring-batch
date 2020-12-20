@@ -1,5 +1,5 @@
 /*
- * Copyright 2006-2018 the original author or authors.
+ * Copyright 2006-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,7 @@ public class MultiResourceItemReader<T> extends AbstractItemStreamItemReader<T> 
 	/**
 	 * Reads the next item, jumping to next resource if necessary.
 	 */
+	@Nullable
 	@Override
 	public T read() throws Exception, UnexpectedInputException, ParseException {
 
@@ -250,8 +251,11 @@ public class MultiResourceItemReader<T> extends AbstractItemStreamItemReader<T> 
 	 * Getter for the current resource.
 	 * @return the current resource or {@code null} if all resources have been
 	 * processed or the first resource has not been assigned yet.
+	 * 
+	 * @deprecated In favor of using {@link ResourceAware} instead.
 	 */
 	@Nullable
+	@Deprecated
 	public Resource getCurrentResource() {
 		if (currentResource >= resources.length || currentResource < 0) {
 			return null;

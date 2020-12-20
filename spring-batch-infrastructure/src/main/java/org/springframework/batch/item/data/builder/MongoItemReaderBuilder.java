@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *  
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.batch.item.data.builder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Glenn Renfro
  * @author Mahmoud Ben Hassine
  * @author Drummond Dawson
+ * @author Parikshit Dutta
  * @since 4.0
  * @see MongoItemReader
  */
@@ -51,7 +53,7 @@ public class MongoItemReaderBuilder<T> {
 
 	private String collection;
 
-	private List<Object> parameterValues;
+	private List<Object> parameterValues = new ArrayList<>();
 
 	protected int pageSize = 10;
 
@@ -284,9 +286,6 @@ public class MongoItemReaderBuilder<T> {
 
 		if(StringUtils.hasText(this.jsonQuery)) {
 			Assert.notNull(this.sorts, "sorts map is required.");
-		}
-		else {
-			Assert.state(this.query.getLimit() != 0, "PageSize in Query object was ignored.");
 		}
 
 		MongoItemReader<T> reader = new MongoItemReader<>();

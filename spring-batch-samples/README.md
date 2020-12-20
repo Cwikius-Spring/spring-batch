@@ -44,6 +44,7 @@ IO Sample Job                             |      |       |         |            
 [Restart Sample](#restart-sample)                               |      |       |   X     |                   |               |            |            |              |                |                |           
 [Retry Sample](#retry-sample)                                   |      |   X   |         |                   |               |            |            |              |                |                |           
 [Skip Sample](#skip-sample)                                     |  X   |       |         |                   |               |            |            |              |                |                |           
+[Chunk Scanning Sample](#chunk-scanning-sample)                 |  X   |       |         |                   |               |            |            |              |                |                |           
 [Trade Job](#trade-job)                                   |      |       |         |                   |               |       X    |            |              |                |                |           
 
 The IO Sample Job has a number of special instances that show different IO features using the same job configuration but with different readers and writers:
@@ -59,6 +60,7 @@ jpa                         |                 |                    |           |
 multiRecordtype             |                 |          x         |           |                 |                 |                  |                     |            |     x     |                |            |     x
 multiResource               |       x         |                    |           |                 |                 |                  |                     |      x     |           |                |            |     x
 [XML Input Output](#xml-input-output)                 |                 |                    |    x      |                 |                 |                  |                     |            |           |        x       |            |
+[MongoDB sample](#mongodb-sample)                 |                 |                    |           |                 |        x         |                  |                     |            |     x      |                |            |
 
 
 ### Common Sample Source Structures
@@ -812,6 +814,72 @@ The format for the transaction attribute specification is given in
 the Spring Core documentation (e.g. see the Javadocs for
 [TransactionAttributeEditor](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/transaction/interceptor/TransactionAttributeEditor.html)).
 
+### Chunk Scanning Sample
+
+In a fault tolerant chunk-oriented step, when a skippable exception is thrown during
+item writing, the item writer (which receives a chunk of items) does not 
+know which item caused the issue. Hence, it will "scan" the chunk item by item 
+and only the faulty item will be skipped. Technically, the commit-interval will 
+be re-set to 1 and each item will re-processed/re-written in its own transaction.
+
+The `org.springframework.batch.sample.skip.SkippableExceptionDuringWriteSample` sample
+illustrates this behaviour:
+
+* It reads numbers from 1 to 6 in chunks of 3 items, so two chunks are created: [1, 2 ,3] and [4, 5, 6]
+* It processes each item by printing it to the standard output and returning it as is.
+* It writes items to the standard output and throws an exception for item 5
+
+The expected behaviour when an exception occurs at item 5 is that the second chunk [4, 5, 6] is
+scanned item by item. Transactions of items 4 and 6 will be successfully committed, while
+the one of item 5 will be rolled back. Here is the output of the sample with some useful comments:
+
+```
+1.  reading item = 1
+2.  reading item = 2
+3.  reading item = 3
+4.  processing item = 1
+5.  processing item = 2
+6.  processing item = 3
+7.  About to write chunk: [1, 2, 3]
+8.  writing item = 1
+9.  writing item = 2
+10. writing item = 3
+11. reading item = 4
+12. reading item = 5
+13. reading item = 6
+14. processing item = 4
+15. processing item = 5
+16. processing item = 6
+17. About to write chunk: [4, 5, 6]
+18. writing item = 4
+19. Throwing exception on item 5
+20. processing item = 4
+21. About to write chunk: [4]
+22. writing item = 4
+23. processing item = 5
+24. About to write chunk: [5]
+25. Throwing exception on item 5
+26. processing item = 6
+27. About to write chunk: [6]
+28. writing item = 6
+29. reading item = null
+```
+
+* Lines 1-10: The first chunk is processed without any issue
+* Lines 11-17: The second chunk is read and processed correctly and is about to be written
+* Line 18: Item 4 is successfully written
+* Line 19: An exception is thrown when attempting to write item 5, the transaction is rolled back and chunk scanning is about to start
+* Lines 20-22: Item 4 is re-processed/re-written successfully in its own transaction
+* Lines 23-25: Item 5 is re-processed/re-written with an exception. Its transaction is rolled back and is skipped
+* Lines 26-28: Item 6 is re-processed/re-written successfully in its own transaction
+* Line 29: Attempting to read the next chunk, but the reader returns `null`:
+the datasource is exhausted and the step ends here
+
+Similar examples show the expected behaviour when a skippable exception is thrown
+during reading and processing can be found in
+`org.springframework.batch.sample.skip.SkippableExceptionDuringReadSample`
+and `org.springframework.batch.sample.skip.SkippableExceptionDuringProcessSample`.
+
 ### Tasklet Job
 
 The goal is to show the simplest use of the batch framework with a
@@ -918,4 +986,20 @@ Once started, you need to [configure Prometheus as data source in Grafana](https
 and import the ready-to-use dashboard in `spring-batch-samples/src/grafana/spring-batch-dashboard.json`.
 
 Finally, run the `org.springframework.batch.sample.metrics.BatchMetricsApplication`
+class without any argument to start the sample.
+
+# MongoDB sample
+
+This sample is a showcase of MongoDB support in Spring Batch. It copies data from
+an input collection to an output collection using `MongoItemReader` and `MongoItemWriter`.
+
+To run the sample, you need to have a MongoDB server up and running on `localhost:27017` 
+(you can change these defaults in `mongodb-sample.properties`). If you use docker,
+you can run the following command to start a MongoDB server:
+
+```
+$>docker run --name mongodb --rm -d -p 27017:27017 mongo
+```
+
+Once MongoDB is up and running, run the `org.springframework.batch.sample.mongodb.MongoDBSampleApp`
 class without any argument to start the sample.

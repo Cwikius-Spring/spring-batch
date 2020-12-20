@@ -5,13 +5,21 @@ Have something you'd like to contribute to **Spring Batch**? We welcome pull req
 
 Please refer back to this document as a checklist before issuing any pull request; this will save time for everyone!
 
+## Code of Conduct
+
+Please see our [code of conduct](https://github.com/spring-projects/.github/blob/master/CODE_OF_CONDUCT.md).
+
+## Reporting Security Vulnerabilities
+
+Please see our [Security policy](https://github.com/spring-projects/spring-batch/security/policy).
+
 ## Understand the basics
 
-Not sure what a *pull request* is, or how to submit one?  Take a look at GitHub's excellent [help documentation][] first.
+Not sure what a *pull request* is, or how to submit one?  Take a look at the excellent [GitHub help documentation][] first.
 
-## Search JIRA first; create an issue if necessary
+## Search Github issues first; create an issue if necessary
 
-Is there already an issue that addresses your concern?  Do a bit of searching in our [JIRA issue tracker][] to see if you can find something similar. If not, please create a new issue before submitting a pull request unless the change is truly trivial, e.g. typo fixes, removing compiler warnings, etc.
+Is there already an issue that addresses your concern?  Do a bit of searching in [Github issues][] to see if you can find something similar. If not, please create a new issue before submitting a pull request unless the change is truly trivial, e.g. typo fixes, removing compiler warnings, etc.
 
 ## Sign the contributor license agreement
 
@@ -39,7 +47,7 @@ _you should see branches on origin as well as upstream, including 'master'_
 
 ## A Day in the Life of a Contributor
 
-* _Always_ work on topic branches (Typically use the Jira ticket ID as the branch name).
+* _Always_ work on topic branches (Typically use the Github issue ID as the branch name).
   - For example, to create and switch to a new branch for issue BATCH-123: `git checkout -b BATCH-123`
 * You might be working on several different topic branches at any given time, but when at a stopping point for one of those branches, commit (a local operation).
 * Please follow the "Commit Guidelines" described in this chapter of Pro Git: [https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project](https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project#_commit_guidelines)
@@ -47,7 +55,7 @@ _you should see branches on origin as well as upstream, including 'master'_
 * When ready to resolve an issue or to collaborate with others, you can push your branch to origin (your fork), e.g.: `git push origin BATCH-123`
 * If you want to collaborate with another contributor, have them fork your repository (add it as a remote) and `git fetch <your-username>` to grab your branch. Alternatively, they can use `git fetch --all` to sync their local state with all of their remotes.
 * If you grant that collaborator push access to your repository, they can even apply their changes to your branch.
-* When ready for your contribution to be reviewed for potential inclusion in the master branch of the canonical *spring-batch* repository (what you know as 'upstream'), issue a pull request to the *spring-projects* repository (for more detail, see [https://help.github.com/send-pull-requests/](https://help.github.com/send-pull-requests/)).
+* When ready for your contribution to be reviewed for potential inclusion in the master branch of the canonical *spring-batch* repository (what you know as 'upstream'), issue a pull request to the *spring-projects* repository (for more detail, see [GitHub help documentation][]).
 * The project lead may merge your changes into the upstream master branch as-is, he may keep the pull request open yet add a comment about something that should be modified, or he might reject the pull request by closing it.
 * A prerequisite for any pull request is that it will be cleanly merge-able with the upstream master's current state. **This is the responsibility of any contributor.** If your pull request cannot be applied cleanly, the project lead will most likely add a comment requesting that you make it merge-able. For a full explanation, see the Pro Git section on rebasing: [https://git-scm.com/book/en/v2/Git-Branching-Rebasing](https://git-scm.com/book/en/v2/Git-Branching-Rebasing). As stated there: "> Often, you’ll do this to make sure your commits apply cleanly on a remote branch — perhaps in a project to which you’re trying to contribute but that you don’t maintain."
 
@@ -151,7 +159,7 @@ Use @since tags for newly-added public API types and methods e.g.
 
 ## Submit JUnit test cases for all behavior changes
 
-Search the codebase to find related unit tests and add additional @Test methods within. It is also acceptable to submit test cases on a per JIRA issue basis.
+Search the codebase to find related unit tests and add additional @Test methods within. It is also acceptable to submit test cases on a per Github issue basis.
 
 ## Squash commits
 
@@ -184,10 +192,10 @@ or locally for the *spring-batch repository only by omitting the '--global' flag
 
 See the [checking out and building][] section of the README for instructions. Make sure that all tests pass prior to submitting your pull request.
 
-## Mention your pull request on the associated JIRA issue
+## Mention your pull request on the associated Github issue
 
-Add a comment to the associated JIRA issue(s) linking to your new pull request.
+Add a comment to the associated Github issue(s) linking to your new pull request.
 
-[help documentation]: https://help.github.com/send-pull-requests
-[JIRA issue tracker]: https://jira.spring.io/browse/BATCH
+[GitHub help documentation]: https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests
+[Github issues]: https://github.com/spring-projects/spring-batch/issues
 [checking out and building]: https://github.com/spring-projects/spring-batch#building-from-source

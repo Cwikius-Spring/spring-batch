@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2019 the original author or authors.
+ * Copyright 2016-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -274,6 +274,51 @@ public class FlatFileItemReaderBuilderTests {
 	}
 
 	@Test
+	public void testEmptyComments() throws Exception {
+		FlatFileItemReader<Foo> reader = new FlatFileItemReaderBuilder<Foo>()
+				.name("fooReader")
+				.resource(getResource("1,2,3\n4,5,6"))
+				.comments(new String[]{})
+				.delimited()
+				.names("first", "second", "third")
+				.targetType(Foo.class)
+				.build();
+
+		reader.open(new ExecutionContext());
+		Foo item = reader.read();
+		assertEquals(1, item.getFirst());
+		assertEquals(2, item.getSecond());
+		assertEquals("3", item.getThird());
+		item = reader.read();
+		assertEquals(4, item.getFirst());
+		assertEquals(5, item.getSecond());
+		assertEquals("6", item.getThird());
+		assertNull(reader.read());
+	}
+
+	@Test
+	public void testDefaultComments() throws Exception {
+		FlatFileItemReader<Foo> reader = new FlatFileItemReaderBuilder<Foo>()
+				.name("fooReader")
+				.resource(getResource("1,2,3\n4,5,6\n#this is a default comment"))
+				.delimited()
+				.names("first", "second", "third")
+				.targetType(Foo.class)
+				.build();
+
+		reader.open(new ExecutionContext());
+		Foo item = reader.read();
+		assertEquals(1, item.getFirst());
+		assertEquals(2, item.getSecond());
+		assertEquals("3", item.getThird());
+		item = reader.read();
+		assertEquals(4, item.getFirst());
+		assertEquals(5, item.getSecond());
+		assertEquals("6", item.getThird());
+		assertNull(reader.read());
+	}
+
+	@Test
 	public void testPrototypeBean() throws Exception {
 		BeanFactory factory = new AnnotationConfigApplicationContext(Beans.class);
 
@@ -477,6 +522,36 @@ public class FlatFileItemReaderBuilderTests {
 				.build();
 
 		assertEquals(encoding, ReflectionTestUtils.getField(reader, "encoding"));
+	}
+
+	@Test
+	public void testErrorMessageWhenNoFieldSetMapperIsProvided() {
+		try {
+			new FlatFileItemReaderBuilder<Foo>()
+					.name("fooReader")
+					.resource(getResource("1;2;3"))
+					.lineTokenizer(line -> new DefaultFieldSet(line.split(";")))
+					.build();
+		} catch (IllegalStateException exception) {
+			String exceptionMessage = exception.getMessage();
+			if (exceptionMessage.equals("No LineTokenizer implementation was provided.")) {
+				fail("Error message should not be 'No LineTokenizer implementation was provided.'" +
+						" when a LineTokenizer is provided");
+			}
+			assertEquals("No FieldSetMapper implementation was provided.", exceptionMessage);
+		}
+	}
+	@Test
+	public void testErrorMessageWhenNoLineTokenizerWasProvided() {
+		try {
+			new FlatFileItemReaderBuilder<Foo>()
+					.name("fooReader")
+					.resource(getResource("1;2;3"))
+					.build();
+		} catch (IllegalStateException exception) {
+			String exceptionMessage = exception.getMessage();
+			assertEquals("No LineTokenizer implementation was provided.", exceptionMessage);
+		}
 	}
 
 	private Resource getResource(String contents) {

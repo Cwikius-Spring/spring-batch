@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 the original author or authors.
+ * Copyright 2018-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
 import org.springframework.core.io.Resource;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link ItemStreamReader} implementation that reads Json objects from a
@@ -69,6 +71,14 @@ public class JsonItemReader<T> extends AbstractItemCountingItemStreamItemReader<
 		Assert.notNull(jsonObjectReader, "The json object reader must not be null.");
 		this.resource = resource;
 		this.jsonObjectReader = jsonObjectReader;
+		setExecutionContextName(ClassUtils.getShortName(JsonItemReader.class));
+	}
+
+	/**
+	 * Create a new {@link JsonItemReader} instance.
+	 */
+	public JsonItemReader(){
+		setExecutionContextName(ClassUtils.getShortName(JsonItemReader.class));
 	}
 
 	/**
@@ -94,6 +104,7 @@ public class JsonItemReader<T> extends AbstractItemCountingItemStreamItemReader<
 		this.resource = resource;
 	}
 
+	@Nullable
 	@Override
 	protected T doRead() throws Exception {
 		return jsonObjectReader.read();
@@ -101,6 +112,8 @@ public class JsonItemReader<T> extends AbstractItemCountingItemStreamItemReader<
 
 	@Override
 	protected void doOpen() throws Exception {
+		Assert.notNull(this.resource, "The resource must not be null.");
+		Assert.notNull(this.jsonObjectReader, "The json object reader must not be null.");
 		if (!this.resource.exists()) {
 			if (this.strict) {
 				throw new IllegalStateException("Input resource must exist (reader is in 'strict' mode)");
