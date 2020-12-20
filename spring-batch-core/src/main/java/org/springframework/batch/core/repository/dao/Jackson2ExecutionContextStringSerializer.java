@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,9 +60,8 @@ import org.springframework.util.Assert;
  * 
  * By default, this implementation trusts a limited set of classes to be
  * deserialized from the execution context. If a class is not trusted by default
- * and is safe to deserialize, you can add it to the base set of trusted classes
- * at {@link Jackson2ExecutionContextStringSerializer construction time} or provide
- * an explicit mapping using Jackson annotations, as shown in the following example:
+ * and is safe to deserialize, you can provide an explicit mapping using Jackson
+ * annotations, as shown in the following example:
  * 
  * <pre class="code">
  *     &#064;JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
@@ -105,19 +103,11 @@ public class Jackson2ExecutionContextStringSerializer implements ExecutionContex
 
     private ObjectMapper objectMapper;
 
-    /**
-     * Create a new {@link Jackson2ExecutionContextStringSerializer}.
-     * 
-     * @param trustedClassNames fully qualified names of classes that are safe
-     * to deserialize from the execution context and which should be added to the
-     * default set of trusted classes.
-     */
-    public Jackson2ExecutionContextStringSerializer(String... trustedClassNames) {
+    public Jackson2ExecutionContextStringSerializer() {
         this.objectMapper = new ObjectMapper();
         this.objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
         this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
-        this.objectMapper.configure(MapperFeature.BLOCK_UNSAFE_POLYMORPHIC_BASE_TYPES, true);
-        this.objectMapper.setDefaultTyping(createTrustedDefaultTyping(trustedClassNames));
+        this.objectMapper.setDefaultTyping(createTrustedDefaultTyping());
         this.objectMapper.registerModule(new JobParametersModule());
     }
 
@@ -206,10 +196,9 @@ public class Jackson2ExecutionContextStringSerializer implements ExecutionContex
     /**
      * Creates a TypeResolverBuilder that checks if a type is trusted.
      * @return a TypeResolverBuilder that checks if a type is trusted.
-     * @param trustedClassNames array of fully qualified trusted class names
      */
-    private static TypeResolverBuilder<? extends TypeResolverBuilder> createTrustedDefaultTyping(String[] trustedClassNames) {
-        TypeResolverBuilder<? extends TypeResolverBuilder>  result = new TrustedTypeResolverBuilder(ObjectMapper.DefaultTyping.NON_FINAL, trustedClassNames);
+    private static TypeResolverBuilder<? extends TypeResolverBuilder> createTrustedDefaultTyping() {
+        TypeResolverBuilder<? extends TypeResolverBuilder>  result = new TrustedTypeResolverBuilder(ObjectMapper.DefaultTyping.NON_FINAL);
         result = result.init(JsonTypeInfo.Id.CLASS, null);
         result = result.inclusion(JsonTypeInfo.As.PROPERTY);
         return result;
@@ -223,9 +212,7 @@ public class Jackson2ExecutionContextStringSerializer implements ExecutionContex
      */
     static class TrustedTypeResolverBuilder extends ObjectMapper.DefaultTypeResolverBuilder {
 
-        private final String[] trustedClassNames;
-
-        TrustedTypeResolverBuilder(ObjectMapper.DefaultTyping defaultTyping, String[] trustedClassNames) {
+        TrustedTypeResolverBuilder(ObjectMapper.DefaultTyping defaultTyping) {
             super(
                     defaultTyping,
                     //we do explicit validation in the TypeIdResolver
@@ -233,8 +220,6 @@ public class Jackson2ExecutionContextStringSerializer implements ExecutionContex
                             .allowIfSubType(Object.class)
                             .build()
             );
-            this.trustedClassNames =
-                    trustedClassNames != null ? Arrays.copyOf(trustedClassNames, trustedClassNames.length) : null;
         }
 
         @Override
@@ -243,7 +228,7 @@ public class Jackson2ExecutionContextStringSerializer implements ExecutionContex
                                             PolymorphicTypeValidator subtypeValidator,
                                             Collection<NamedType> subtypes, boolean forSer, boolean forDeser) {
             TypeIdResolver result = super.idResolver(config, baseType, subtypeValidator, subtypes, forSer, forDeser);
-            return new TrustedTypeIdResolver(result, this.trustedClassNames);
+            return new TrustedTypeIdResolver(result);
         }
     }
 
@@ -298,15 +283,10 @@ public class Jackson2ExecutionContextStringSerializer implements ExecutionContex
                 "org.springframework.batch.core.jsr.partition.JsrPartitionHandler$PartitionPlanState"
         )));
 
-        private final Set<String> trustedClassNames = new LinkedHashSet<>(TRUSTED_CLASS_NAMES);
-
         private final TypeIdResolver delegate;
 
-        TrustedTypeIdResolver(TypeIdResolver delegate, String[] trustedClassNames) {
+        TrustedTypeIdResolver(TypeIdResolver delegate) {
             this.delegate = delegate;
-            if (trustedClassNames != null) {
-                this.trustedClassNames.addAll(Arrays.asList(trustedClassNames));
-            }
         }
 
         @Override
@@ -347,13 +327,12 @@ public class Jackson2ExecutionContextStringSerializer implements ExecutionContex
                 return result;
             }
             throw new IllegalArgumentException("The class with " + id + " and name of " + className + " is not trusted. " +
-                    "If you believe this class is safe to deserialize, you can add it to the base set of trusted classes " +
-                    "at construction time or provide an explicit mapping using Jackson annotations or a custom ObjectMapper. " +
+                    "If you believe this class is safe to deserialize, please provide an explicit mapping using Jackson annotations or a custom ObjectMapper. " +
                     "If the serialization is only done by a trusted source, you can also enable default typing.");
         }
 
         private boolean isTrusted(String id) {
-            return this.trustedClassNames.contains(id);
+            return TRUSTED_CLASS_NAMES.contains(id);
         }
 
         @Override

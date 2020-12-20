@@ -25,18 +25,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.batch.item.xml.StaxEventItemReader;
+import org.springframework.batch.item.xml.StaxUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-import org.springframework.util.xml.StaxUtils;
 
 /**
  * A fluent builder for the {@link StaxEventItemReader}
  *
  * @author Michael Minella
  * @author Glenn Renfro
- * @author Mahmoud Ben Hassine
  * @author Parikshit Dutta
  * @since 4.0
  */
@@ -60,9 +59,7 @@ public class StaxEventItemReaderBuilder<T> {
 
 	private int currentItemCount;
 
-	private XMLInputFactory xmlInputFactory = StaxUtils.createDefensiveInputFactory();
-
-	private String encoding = StaxEventItemReader.DEFAULT_ENCODING;
+	private XMLInputFactory xmlInputFactory = StaxUtils.createXmlInputFactory();
 
 	/**
 	 * Configure if the state of the {@link org.springframework.batch.item.ItemStreamSupport}
@@ -203,19 +200,6 @@ public class StaxEventItemReaderBuilder<T> {
 	}
 
 	/**
-	 * Encoding for the input file. Defaults to {@link StaxEventItemReader#DEFAULT_ENCODING}.
-	 *
-	 * @param encoding String encoding algorithm
-	 * @return the current instance of the builder
-	 * @see StaxEventItemReader#setEncoding(String)
-	 */
-	public StaxEventItemReaderBuilder<T> encoding(String encoding) {
-		this.encoding = encoding;
-
-		return this;
-	}
-
-	/**
 	 * Validates the configuration and builds a new {@link StaxEventItemReader}
 	 *
 	 * @return a new instance of the {@link StaxEventItemReader}
@@ -245,7 +229,6 @@ public class StaxEventItemReaderBuilder<T> {
 		reader.setCurrentItemCount(this.currentItemCount);
 		reader.setMaxItemCount(this.maxItemCount);
 		reader.setXmlInputFactory(this.xmlInputFactory);
-		reader.setEncoding(this.encoding);
 
 		return reader;
 	}
