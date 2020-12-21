@@ -679,7 +679,7 @@ task prepareAsciidocBuild(type: Sync) {
 		configurations.docs.collect { zipTree(it) }
 	}
 	// and doc sources
-	from "spring-batch-docs/asciidoc/"
+	from "spring-batch-docs-zh/asciidoc/"
 	// to a build directory of your choice
 	into "$buildDir/asciidoc/assemble"
 }
