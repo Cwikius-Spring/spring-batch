@@ -36,5 +36,5 @@ deploy:
   region: us-east-2
   bucket: "com.edtestbank.docs"
   skip_cleanup: true
-  local_dir: build/docs
+  local_dir: build
   upload-dir: spring-batch-docs
