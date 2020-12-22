@@ -34,7 +34,7 @@ deploy:
   access_key_id: "$AWS_ACCESS_KEY"
   secret_access_key: "$AWS_SECRET_KEY"
   region: us-east-2
-  bucket: "com.ossez.docs"
+  bucket: "com.edtestbank.docs"
   skip_cleanup: true
-  local_dir: build/asciidoc/html5
+  local_dir: build/docs
   upload-dir: spring-batch-docs
